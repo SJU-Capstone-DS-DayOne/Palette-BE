@@ -1,4 +1,4 @@
-package kr.ac.sejong.ds.palette.config;
+package kr.ac.sejong.ds.palette.common.config;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
