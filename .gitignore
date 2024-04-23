@@ -202,3 +202,6 @@ gradle-app.setting
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,intellij,java,gradle
 src/main/resources/application-db.yml
+
+# logs from logback
+logs/
