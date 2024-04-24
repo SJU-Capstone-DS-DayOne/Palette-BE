@@ -18,14 +18,14 @@ public class CoupleCode extends BaseEntity {
     private Long id;
 
     @NotNull
-    private Integer coupleCode;
+    private Integer code;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public CoupleCode(Integer coupleCode) {
-        this.coupleCode = coupleCode;
+    public CoupleCode(Integer code) {
+        this.code = code;
     }
 
     // 랜덤 코드 생성은 ThreadLocalRandom 사용 예정
