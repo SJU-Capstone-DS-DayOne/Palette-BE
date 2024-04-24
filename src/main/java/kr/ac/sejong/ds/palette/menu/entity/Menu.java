@@ -13,13 +13,14 @@ import lombok.NoArgsConstructor;
 public class Menu extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name ="menu_id")
     private Long id;
 
     private String name;
 
     private String imageUrl;
 
-    private Integer rank;
+    private Integer ranking;
 
     private int price;
 
