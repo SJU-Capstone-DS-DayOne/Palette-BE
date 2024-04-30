@@ -11,9 +11,8 @@ permissions:
   contents: read
 
 jobs:
-  # Spring Boot 애플리케이션을 빌드하여 도커허브에 푸시하는 과정
+  # Spring Boot 애플리케이션을 빌드하여 Docker Hub에 Push하는 과정
   build-docker-image:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -39,3 +38,35 @@ jobs:
         docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
         docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/palette .
         docker push ${{ secrets.DOCKERHUB_USERNAME }}/palette
+
+  # 위 build-docker-image 작업에서 Push한 이미지를 EC2에서 Pull & Run시키는 과정 
+  run-docker-image-on-ec2:
+    # build-docker-image 작업이 완료되어야 실행됨
+    needs: build-docker-image
+
+    # self-hosted-runner에서 동작
+    runs-on: self-hosted
+
+
+
+    steps:
+    - uses: actions/checkout@v4
+
+    # 1. 최신 이미지 Pull
+    - name: docker pull
+      run: |
+        docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
+        docker pull ${{ secrets.DOCKERHUB_USERNAME }}/palette
+      
+    # 2. 기존 컨테이너 중지
+    - name: docker stop container
+      run: docker stop $(docker ps -q) 2>/dev/null || true
+
+    # 3. 최신 이미지 컨테이너화하여 실행시
+    - name: docker run new container
+      run: docker run --rm -d -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/palette
+
+    # 4. 미사용 이미지 정리
+    - name: delete old docker image
+      run: docker system prune -f
+      
