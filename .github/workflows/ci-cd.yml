@@ -1,4 +1,4 @@
-name: Java CI with Gradle
+name: CI/CD
 
 # 동작 조건 설정: develop 브랜치에 push or pull request가 발생할 경우 동작
 on:
