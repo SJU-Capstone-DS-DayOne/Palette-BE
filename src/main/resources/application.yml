@@ -3,6 +3,10 @@ spring:
     name: palette
   profiles:
     include: db
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
 
 logging:
   level:
