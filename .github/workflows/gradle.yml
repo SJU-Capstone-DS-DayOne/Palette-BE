@@ -17,6 +17,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    
+    # 0. 외부 설정 파일 세팅 (application-db.yml)
+    - name: 외부 설정 파일 세팅
+      run: echo "${{ secrets.APPLICATION_DB_YML }}" > ./src/main/resources/application-db.yml
+    
     # 1. Java 21 세팅
     - name: Set up JDK 21
       uses: actions/setup-java@v4
@@ -46,8 +51,6 @@ jobs:
 
     # self-hosted-runner에서 동작
     runs-on: self-hosted
-
-
 
     steps:
     - uses: actions/checkout@v4
