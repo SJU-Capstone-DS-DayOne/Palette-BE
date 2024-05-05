@@ -18,7 +18,11 @@ public class Member extends BaseEntity {
     private Long id;
 
     @NotNull  // DDL 생성 시에도 not null 적용됨
+    @Column(unique = true)
     private String email;
+
+    @NotNull
+    private String password;
 
     @NotNull
     private String nickname;
@@ -31,8 +35,9 @@ public class Member extends BaseEntity {
     @JoinColumn(name = "couple_id")
     private Couple couple;
 
-    public Member(String email, String nickname, Gender gender) {
+    public Member(String email, String password, String nickname, Gender gender) {
         this.email = email;
+        this.password = password;
         this.nickname = nickname;
         this.gender = gender;
     }
