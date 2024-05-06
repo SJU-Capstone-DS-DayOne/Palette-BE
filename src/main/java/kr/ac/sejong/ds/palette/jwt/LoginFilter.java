@@ -15,14 +15,13 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.util.StreamUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.Iterator;
+
+import static kr.ac.sejong.ds.palette.jwt.util.JWTUtil.*;
 
 @RequiredArgsConstructor
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
@@ -64,11 +63,10 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         // 유저 정보
         String email = authentication.getName();
-        System.out.println("email" + email);
 
         // 토큰 생성
-        String access = jwtUtil.createJwt("access", email, 60*60*1000L);  // 1시간
-        String refresh = jwtUtil.createJwt("refresh", email, 24*60*60*1000L);  // 24시간
+        String access = jwtUtil.createJwt("access", email, ACCESS_TOKEN_EXP_MS);  // 1시간
+        String refresh = jwtUtil.createJwt("refresh", email, REFRESH_TOKEN_EXP_MS);  // 24시간
 
         //응답 설정
         response.setHeader("access", access);

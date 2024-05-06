@@ -13,10 +13,10 @@ import java.util.Date;
 public class JWTUtil {
 
     private SecretKey secretKey;
+    public static final Long ACCESS_TOKEN_EXP_MS = 60*60*1000L;  // 1시간
+    public static final Long REFRESH_TOKEN_EXP_MS = 24*60*60*1000L;  // 24시간
 
     public JWTUtil(@Value("${spring.jwt.secret}")String secret) {
-
-
         secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
     }
 
