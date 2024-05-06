@@ -2,7 +2,9 @@ spring:
   application:
     name: palette
   profiles:
-    include: db
+    include:
+      - db
+      - jwt
   jpa:
     properties:
       hibernate:
