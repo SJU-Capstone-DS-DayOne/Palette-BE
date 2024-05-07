@@ -4,7 +4,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import kr.ac.sejong.ds.palette.jwt.JwtRepository;
+import kr.ac.sejong.ds.palette.jwt.repository.JwtRepository;
 import kr.ac.sejong.ds.palette.jwt.entity.RefreshToken;
 import kr.ac.sejong.ds.palette.jwt.util.JWTUtil;
 import lombok.RequiredArgsConstructor;
@@ -77,5 +77,13 @@ public class JwtService {
 
 
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    public void addRefreshToken(String email, String refresh, Long expiredMs) {
+
+        Date date = new Date(System.currentTimeMillis() + expiredMs);
+        RefreshToken refreshToken = new RefreshToken(email, refresh, date.toString());
+
+        jwtRepository.save(refreshToken);
     }
 }

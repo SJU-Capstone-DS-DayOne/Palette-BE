@@ -7,6 +7,8 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import kr.ac.sejong.ds.palette.jwt.dto.CustomUserDetails;
+import kr.ac.sejong.ds.palette.jwt.entity.RefreshToken;
+import kr.ac.sejong.ds.palette.jwt.service.JwtService;
 import kr.ac.sejong.ds.palette.jwt.util.JWTUtil;
 import kr.ac.sejong.ds.palette.member.dto.request.MemberLoginRequest;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ import org.springframework.util.StreamUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 
 import static kr.ac.sejong.ds.palette.jwt.util.JWTUtil.*;
 
@@ -28,6 +31,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
+    private final JwtService jwtService;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -68,7 +72,10 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String access = jwtUtil.createJwt("access", email, ACCESS_TOKEN_EXP_MS);  // 1시간
         String refresh = jwtUtil.createJwt("refresh", email, REFRESH_TOKEN_EXP_MS);  // 24시간
 
-        //응답 설정
+        // Refresh 토큰 저장
+        jwtService.addRefreshToken(email, refresh, REFRESH_TOKEN_EXP_MS);
+
+        // 응답 설정
         response.setHeader("access", access);
         response.addCookie(createCookie("refresh", refresh));
         response.setStatus(HttpStatus.OK.value());
@@ -79,16 +86,5 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
         // 로그인 실패시 401 응답 코드 반환
         response.setStatus(401);
-    }
-
-    private Cookie createCookie(String key, String value) {
-
-        Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(24*60*60);  // 생명주기 24시간
-        //cookie.setSecure(true);  // https일 경우
-        //cookie.setPath("/");  // 쿠키 적용 범위
-        cookie.setHttpOnly(true);  // 클라이언트 단에서 JS로 쿠키에 접근하지 못하도록 함 (보안)
-
-        return cookie;
     }
 }
