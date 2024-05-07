@@ -1,8 +1,10 @@
 package kr.ac.sejong.ds.palette.common.config;
 
 import jakarta.servlet.http.HttpServletRequest;
+import kr.ac.sejong.ds.palette.jwt.CustomLogoutFilter;
 import kr.ac.sejong.ds.palette.jwt.JWTFilter;
 import kr.ac.sejong.ds.palette.jwt.LoginFilter;
+import kr.ac.sejong.ds.palette.jwt.repository.JwtRepository;
 import kr.ac.sejong.ds.palette.jwt.service.JwtService;
 import kr.ac.sejong.ds.palette.jwt.util.JWTUtil;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -31,6 +34,7 @@ public class SecurityConfig {
 
     private final JWTUtil jwtUtil;
     private final JwtService jwtService;
+    private final JwtRepository jwtRepository;
 
     // SecurityFilterChain을 반환하고 Bean으로 등록함으로써 컴포넌트 기반의 보안 설정이 가능
     @Bean
@@ -82,6 +86,10 @@ public class SecurityConfig {
         // 필터 추가 LoginFilter()는 인자를 받음 (AuthenticationManager() 메소드에 authenticationConfiguration 객체를 넣어야 함) 따라서 등록 필요
         http
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, jwtService), UsernamePasswordAuthenticationFilter.class);
+
+        // CustomLogoutFilter 등록
+        http
+                .addFilterBefore(new CustomLogoutFilter(jwtUtil, jwtRepository), LogoutFilter.class);
 
         // 세션 설정
         http
