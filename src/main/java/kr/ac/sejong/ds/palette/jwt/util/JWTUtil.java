@@ -50,10 +50,10 @@ public class JWTUtil {
     public static Cookie createCookie(String key, String value) {
 
         Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(24*60*60);  // 생명주기 24시간
-//        cookie.setSecure(true);  // https일 경우
-        cookie.setPath("/");  // 쿠키 적용 범위
-        cookie.setHttpOnly(false);  // 클라이언트 단에서 JS로 쿠키에 접근하지 못하도록 함 (보안)
+        cookie.setMaxAge(REFRESH_TOKEN_EXP_MS.intValue() / 1000);  // 생명주기 24시간
+        cookie.setSecure(true);  // https일 경우
+//        cookie.setPath("/");  // 쿠키 적용 범위
+        cookie.setHttpOnly(true);  // 클라이언트 단에서 JS로 쿠키에 접근하지 못하도록 함 (보안)
 
         return cookie;
     }
