@@ -3,6 +3,7 @@ package kr.ac.sejong.ds.palette.jwt.util;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.Cookie;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -47,14 +48,20 @@ public class JWTUtil {
                 .compact();
     }
 
-    public static Cookie createCookie(String key, String value) {
-
-        Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(REFRESH_TOKEN_EXP_MS.intValue() / 1000);  // 생명주기 24시간
-        cookie.setSecure(true);  // https일 경우
-        cookie.setPath("/");  // 쿠키 적용 범위
-        cookie.setHttpOnly(false);  // 클라이언트 단에서 JS로 쿠키에 접근하지 못하도록 함 (보안)
-//
-        return cookie;
+    public static String createCookie(String key, String value) {
+        return ResponseCookie.from(key, value)
+                .path("/")
+                .sameSite("None")
+                .httpOnly(true)
+                .secure(true)
+                .maxAge(REFRESH_TOKEN_EXP_MS.intValue() / 1000)
+                .build()
+                .toString();
+//        Cookie cookie = new Cookie(key, value);
+//        cookie.setMaxAge(REFRESH_TOKEN_EXP_MS.intValue() / 1000);  // 생명주기 24시간
+//        cookie.setSecure(true);  // https일 경우
+//        cookie.setPath("/");  // 쿠키 적용 범위
+//        cookie.setHttpOnly(true);  // 클라이언트 단에서 JS로 쿠키에 접근하지 못하도록 함 (보안)
+//        return cookie;
     }
 }
