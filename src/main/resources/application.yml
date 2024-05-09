@@ -5,6 +5,7 @@ spring:
     include:
       - db
       - jwt
+      - ssl
   jpa:
     properties:
       hibernate:
