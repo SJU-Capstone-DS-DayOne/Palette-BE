@@ -23,6 +23,8 @@ jobs:
       run: |
         echo "${{ secrets.APPLICATION_DB_YML }}" > ./src/main/resources/application-db.yml
         echo "${{ secrets.APPLICATION_JWT_YML }}" > ./src/main/resources/application-jwt.yml
+        echo "${{ secrets.APPLICATION_SSL_YML }}" > ./src/main/resources/application-ssl.yml
+        echo ${{ secrets.KEYSTORE_BASE64 }} | base64 -d > ./src/main/resources/keystore.p12
     
     # 1. Java 21 세팅
     - name: Set up JDK 21
