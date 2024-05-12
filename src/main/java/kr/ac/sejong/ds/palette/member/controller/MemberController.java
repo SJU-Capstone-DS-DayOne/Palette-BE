@@ -38,4 +38,10 @@ public class MemberController {
         memberService.updateNickname(memberId, memberNicknameUpdateRequest);
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping("/members/{memberId}")
+    public ResponseEntity<Void> deleteMember(@PathVariable(name = "memberId") Long memberId){
+        memberService.deleteMember(memberId);
+        return ResponseEntity.ok().build();
+    }
 }
