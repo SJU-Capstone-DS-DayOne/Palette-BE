@@ -26,4 +26,10 @@ public class MemberController {
         MemberJoinResponse memberJoinResponse = memberService.join(memberJoinRequest);
         return ResponseEntity.ok().body(memberJoinResponse);
     }
+
+    @GetMapping("/members/{memberId}")
+    public ResponseEntity<MemberResponse> getMember(@PathVariable(name = "memberId") Long memberId){
+        MemberResponse memberResponse = memberService.getMember(memberId);
+        return ResponseEntity.ok().body(memberResponse);
+    }
 }
