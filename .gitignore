@@ -204,6 +204,8 @@ gradle-app.setting
 
 src/main/resources/application-db.yml
 src/main/resources/application-jwt.yml
+src/main/resources/application-ssl.yml
+src/main/resources/keystore.p12
 
 # logs from logback
 logs/

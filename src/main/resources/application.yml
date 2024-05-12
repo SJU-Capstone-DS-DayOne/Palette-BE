@@ -5,6 +5,7 @@ spring:
     include:
       - db
       - jwt
+      - ssl
   jpa:
     properties:
       hibernate:
@@ -14,3 +15,6 @@ logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.orm.jdbc.bind: trace
+
+server:
+  port: 443
