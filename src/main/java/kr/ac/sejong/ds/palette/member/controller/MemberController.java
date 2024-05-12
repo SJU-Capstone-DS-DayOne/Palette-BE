@@ -32,4 +32,10 @@ public class MemberController {
         MemberResponse memberResponse = memberService.getMember(memberId);
         return ResponseEntity.ok().body(memberResponse);
     }
+
+    @PutMapping("/members/{memberId}")
+    public ResponseEntity<Void> updateMemberNickname(@PathVariable(name = "memberId") Long memberId, @RequestBody @Valid MemberNicknameUpdateRequest memberNicknameUpdateRequest){
+        memberService.updateNickname(memberId, memberNicknameUpdateRequest);
+        return ResponseEntity.ok().build();
+    }
 }

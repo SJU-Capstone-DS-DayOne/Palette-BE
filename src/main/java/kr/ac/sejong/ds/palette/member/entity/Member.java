@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import kr.ac.sejong.ds.palette.common.entity.BaseEntity;
 import kr.ac.sejong.ds.palette.couple.entity.Couple;
+import kr.ac.sejong.ds.palette.member.dto.request.MemberNicknameUpdateRequest;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,5 +41,9 @@ public class Member extends BaseEntity {
         this.password = password;
         this.nickname = nickname;
         this.gender = gender;
+    }
+
+    public void updateNickname(final MemberNicknameUpdateRequest memberNicknameUpdateRequest){
+        this.nickname = memberNicknameUpdateRequest.nickname();
     }
 }
