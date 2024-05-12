@@ -1,4 +1,4 @@
-package kr.ac.sejong.ds.palette.member.dto.request;
+package kr.ac.sejong.ds.palette.jwt.dto;
 
 import lombok.Getter;
 

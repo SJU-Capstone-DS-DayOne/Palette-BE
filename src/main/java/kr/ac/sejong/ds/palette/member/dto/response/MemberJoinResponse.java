@@ -1,12 +1,12 @@
 package kr.ac.sejong.ds.palette.member.dto.response;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import kr.ac.sejong.ds.palette.member.entity.Member;
 
-@Getter
-@RequiredArgsConstructor
-public class MemberJoinResponse {
+public record MemberJoinResponse(
+        Long id
+) {
 
-    private final Long id;
+    public static MemberJoinResponse of(Member member) {
+        return new MemberJoinResponse(member.getId());
+    }
 }
