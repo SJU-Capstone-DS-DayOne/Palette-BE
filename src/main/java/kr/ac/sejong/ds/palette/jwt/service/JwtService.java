@@ -75,8 +75,7 @@ public class JwtService {
 
         // response
         response.setHeader("access", newAccess);
-        response.setHeader("Set-Cookie", createCookie("refresh", refresh).toString());
-
+        response.setHeader("Set-Cookie", createCookie("refresh", newRefresh).toString());
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
