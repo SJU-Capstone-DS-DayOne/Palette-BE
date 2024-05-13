@@ -56,6 +56,7 @@ public class SecurityConfig {
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
                         configuration.setMaxAge(3600L);
 
+                        configuration.setExposedHeaders(Arrays.asList("access"));
 
                         return configuration;
                     }
