@@ -55,10 +55,7 @@ public class SecurityConfig {
                         configuration.setAllowCredentials(true);
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
                         configuration.setMaxAge(3600L);
-
-                        configuration.setExposedHeaders(
-                                Arrays.asList("access", "Set-Cookie")
-                        );
+                        configuration.setExposedHeaders(Arrays.asList("access"));
 
                         return configuration;
                     }
@@ -80,7 +77,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/login", "/", "/join", "/reissue").permitAll()
-                        .anyRequest().authenticated());
+                        .anyRequest().permitAll());
 
         // JWTFilter 등록
         http

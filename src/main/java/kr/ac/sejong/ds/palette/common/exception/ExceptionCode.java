@@ -9,7 +9,9 @@ public enum ExceptionCode {
 
     INVALID_REQUEST(1000, "올바르지 않은 요청입니다."),
 
-    DUPLICATED_MEMBER_EMAIL(1001, "중복된 닉네임입니다.");
+    DUPLICATED_MEMBER_EMAIL(1001, "중복된 이메일입니다."),
+    NOT_FOUND_MEMBER_ID(1002, "요청한 ID에 해당하는 멤버가 존재하지 않습니다.");
+
 
 //    INVALID_REQUEST(1000, "올바르지 않은 요청입니다."),
 //

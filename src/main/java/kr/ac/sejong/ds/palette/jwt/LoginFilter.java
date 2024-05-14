@@ -3,14 +3,11 @@ package kr.ac.sejong.ds.palette.jwt;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletInputStream;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import kr.ac.sejong.ds.palette.jwt.dto.CustomUserDetails;
-import kr.ac.sejong.ds.palette.jwt.entity.RefreshToken;
 import kr.ac.sejong.ds.palette.jwt.service.JwtService;
 import kr.ac.sejong.ds.palette.jwt.util.JWTUtil;
-import kr.ac.sejong.ds.palette.member.dto.request.MemberLoginRequest;
+import kr.ac.sejong.ds.palette.jwt.dto.MemberLoginRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,7 +19,6 @@ import org.springframework.util.StreamUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
 
 import static kr.ac.sejong.ds.palette.jwt.util.JWTUtil.*;
 
@@ -37,7 +33,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 
         // 클라이언트 요청에서 email, password 추출
-        MemberLoginRequest memberLoginRequest = new MemberLoginRequest();
+        MemberLoginRequest memberLoginRequest;
 
         try {
             ObjectMapper objectMapper = new ObjectMapper();

@@ -1,16 +1,13 @@
 package kr.ac.sejong.ds.palette.member.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
 import kr.ac.sejong.ds.palette.member.entity.Gender;
-import lombok.Getter;
 
-@Getter
-public class MemberJoinRequest {
+public record MemberJoinRequest(
+        @NotBlank String email,
+        @NotBlank String password,
+        @NotBlank String nickname,
+        @NotBlank Gender gender
+) {
 
-    private String email;
-
-    private String password;
-
-    private String nickname;
-
-    private Gender gender;
 }
