@@ -76,8 +76,9 @@ public class SecurityConfig {
         // 경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/login", "/", "/join", "/reissue").permitAll()
-                        .anyRequest().permitAll());
+                        .requestMatchers("/login", "/", "/join", "/reissue",
+                                "/swagger-ui/**", "/api-docs/**", "/v3/api-docs/**").permitAll()
+                        .anyRequest().authenticated());
 
         // JWTFilter 등록
         http
