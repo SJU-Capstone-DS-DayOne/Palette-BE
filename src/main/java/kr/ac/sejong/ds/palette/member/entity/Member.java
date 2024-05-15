@@ -32,10 +32,6 @@ public class Member extends BaseEntity {
     @Enumerated(value = EnumType.STRING)
     private Gender gender;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "couple_id")
-    private Couple couple;
-
     public Member(String email, String password, String nickname, Gender gender) {
         this.email = email;
         this.password = password;

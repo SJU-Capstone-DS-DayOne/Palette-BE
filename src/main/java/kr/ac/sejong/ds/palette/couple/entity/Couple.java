@@ -2,6 +2,7 @@ package kr.ac.sejong.ds.palette.couple.entity;
 
 import jakarta.persistence.*;
 import kr.ac.sejong.ds.palette.common.entity.BaseEntity;
+import kr.ac.sejong.ds.palette.member.entity.Member;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,4 +15,17 @@ public class Couple extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "couple_id")
     private Long id;
+
+    @OneToOne
+    @JoinColumn(name = "male_id")
+    private Member male;
+
+    @OneToOne
+    @JoinColumn(name = "female_id")
+    private Member female;
+
+    public Couple(Member male, Member female) {
+        this.male = male;
+        this.female = female;
+    }
 }
