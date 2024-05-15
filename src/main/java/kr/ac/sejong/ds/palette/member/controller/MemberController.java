@@ -6,7 +6,7 @@ import jakarta.validation.Valid;
 import kr.ac.sejong.ds.palette.member.dto.request.MemberJoinRequest;
 import kr.ac.sejong.ds.palette.member.dto.request.MemberNicknameUpdateRequest;
 import kr.ac.sejong.ds.palette.member.dto.response.MemberJoinResponse;
-import kr.ac.sejong.ds.palette.member.dto.response.MemberResponse;
+import kr.ac.sejong.ds.palette.member.dto.response.MemberInfoResponse;
 import kr.ac.sejong.ds.palette.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,9 +28,9 @@ public class MemberController {
 
     @Operation(summary = "단일 회원 정보 조회")
     @GetMapping("/members/{memberId}")
-    public ResponseEntity<MemberResponse> getMember(@PathVariable(name = "memberId") Long memberId){
-        MemberResponse memberResponse = memberService.getMember(memberId);
-        return ResponseEntity.ok().body(memberResponse);
+    public ResponseEntity<MemberInfoResponse> getMemberInfo(@PathVariable(name = "memberId") Long memberId){
+        MemberInfoResponse memberInfoResponse = memberService.getMemberInfo(memberId);
+        return ResponseEntity.ok().body(memberInfoResponse);
     }
 
     @Operation(summary = "회원 닉네임 수정")
