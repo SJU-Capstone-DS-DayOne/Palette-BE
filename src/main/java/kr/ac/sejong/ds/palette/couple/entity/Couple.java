@@ -16,11 +16,11 @@ public class Couple extends BaseEntity {
     @Column(name = "couple_id")
     private Long id;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "male_id")
     private Member male;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "female_id")
     private Member female;
 
