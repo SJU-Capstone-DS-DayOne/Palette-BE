@@ -3,6 +3,7 @@ package kr.ac.sejong.ds.palette.couple.controller;
 import jakarta.validation.Valid;
 import kr.ac.sejong.ds.palette.couple.dto.request.CoupleConnectRequest;
 import kr.ac.sejong.ds.palette.couple.dto.response.CoupleCodeResponse;
+import kr.ac.sejong.ds.palette.couple.dto.response.IsCoupleResponse;
 import kr.ac.sejong.ds.palette.couple.service.CoupleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,12 @@ public class CoupleController {
     public ResponseEntity<CoupleCodeResponse> getCoupleCode(@PathVariable(name = "memberId") Long memberId){
         CoupleCodeResponse coupleCodeResponse = coupleService.getCoupleCode(memberId);
         return ResponseEntity.ok().body(coupleCodeResponse);
+    }
+
+    @GetMapping("/members/{memberId}/couples")
+    public ResponseEntity<IsCoupleResponse> checkCouple(@PathVariable(name = "memberId") Long memberId){
+        IsCoupleResponse isCoupleResponse = coupleService.checkCouple(memberId);
+        return ResponseEntity.ok().body(isCoupleResponse);
     }
 
     @PostMapping("/members/{memberId}/couples")

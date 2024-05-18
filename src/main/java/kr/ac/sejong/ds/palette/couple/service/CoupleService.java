@@ -3,6 +3,7 @@ package kr.ac.sejong.ds.palette.couple.service;
 import kr.ac.sejong.ds.palette.common.exception.BadRequestException;
 import kr.ac.sejong.ds.palette.couple.dto.request.CoupleConnectRequest;
 import kr.ac.sejong.ds.palette.couple.dto.response.CoupleCodeResponse;
+import kr.ac.sejong.ds.palette.couple.dto.response.IsCoupleResponse;
 import kr.ac.sejong.ds.palette.couple.entity.Couple;
 import kr.ac.sejong.ds.palette.couple.entity.CoupleCode;
 import kr.ac.sejong.ds.palette.couple.repository.CoupleCodeRepository;
@@ -51,6 +52,10 @@ public class CoupleService {
         return CoupleCodeResponse.of(newCoupleCode);
     }
 
+    public IsCoupleResponse checkCouple(Long memberId){
+        return IsCoupleResponse.of(coupleRepository.existsByMaleIdOrFemaleId(memberId, memberId));
+    }
+
     @Transactional
     public void createCouple(Long memberId, CoupleConnectRequest coupleConnectRequest){
         // 멤버 존재 여부 확인
@@ -82,14 +87,16 @@ public class CoupleService {
         coupleCodeRepository.delete(loverCoupleCode);
     }
 
+    @Transactional
     public void deleteCouple(Long memberId) {
         // 멤버 존재 여부 확인
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER_ID));
 
-        Couple couple = coupleRepository.findByMaleIdOrFemaleId(memberId)
-                .orElseThrow(() -> new BadRequestException(NOT_FOUND_COUPLE_OF_MEMBER));
-
+        // 커플 레코드 조회 및 삭제
+        Optional<Couple> optionalCouple = member.getGender() == Gender.MALE ?
+                coupleRepository.findByMaleId(memberId) : coupleRepository.findByFemaleId(memberId);
+        Couple couple = optionalCouple.orElseThrow(() -> new BadRequestException(NOT_FOUND_COUPLE_OF_MEMBER));
         coupleRepository.delete(couple);
     }
 

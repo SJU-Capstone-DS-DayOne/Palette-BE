@@ -7,9 +7,11 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Optional;
 
 public interface CoupleRepository extends JpaRepository<Couple, Long> {
-    @Query("SELECT c FROM Couple c WHERE c.male.id = :memberId OR c.female.id = :memberId")
-    Optional<Couple> findByMaleIdOrFemaleId(Long memberId);
+    Optional<Couple> findByMaleIdOrFemaleId(Long memberId1, Long memberId2);
+    Optional<Couple> findByMaleId(Long memberId);
+    Optional<Couple> findByFemaleId(Long memberId);
 
+    boolean existsByMaleIdOrFemaleId(Long memberId1, Long memberId2);
     boolean existsByMaleId(Long memberId);
     boolean existsByFemaleId(Long memberId);
 }
