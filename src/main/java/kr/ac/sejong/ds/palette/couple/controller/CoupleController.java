@@ -7,8 +7,10 @@ import kr.ac.sejong.ds.palette.couple.dto.request.CoupleConnectRequest;
 import kr.ac.sejong.ds.palette.couple.dto.response.CoupleCodeResponse;
 import kr.ac.sejong.ds.palette.couple.dto.response.IsCoupleResponse;
 import kr.ac.sejong.ds.palette.couple.service.CoupleService;
+import kr.ac.sejong.ds.palette.jwt.dto.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,30 +19,34 @@ import org.springframework.web.bind.annotation.*;
 public class CoupleController {
     private final CoupleService coupleService;
 
-    @GetMapping("/members/{memberId}/couple-codes")
+    @GetMapping("/couple-codes")
     @Operation(summary = "커플 코드 조회 (없을 시 생성)")
-    public ResponseEntity<CoupleCodeResponse> getCoupleCode(@PathVariable(name = "memberId") Long memberId){
+    public ResponseEntity<CoupleCodeResponse> getCoupleCode(Authentication authentication){
+        Long memberId = ((CustomUserDetails) authentication.getPrincipal()).getMemberId();
         CoupleCodeResponse coupleCodeResponse = coupleService.getCoupleCode(memberId);
         return ResponseEntity.ok().body(coupleCodeResponse);
     }
 
-    @GetMapping("/members/{memberId}/couples")
+    @GetMapping("/couples")
     @Operation(summary = "커플 여부 확인")
-    public ResponseEntity<IsCoupleResponse> checkCouple(@PathVariable(name = "memberId") Long memberId){
+    public ResponseEntity<IsCoupleResponse> checkCouple(Authentication authentication){
+        Long memberId = ((CustomUserDetails) authentication.getPrincipal()).getMemberId();
         IsCoupleResponse isCoupleResponse = coupleService.checkCouple(memberId);
         return ResponseEntity.ok().body(isCoupleResponse);
     }
 
-    @PostMapping("/members/{memberId}/couples")
+    @PostMapping("/couples")
     @Operation(summary = "커플 연결")
-    public ResponseEntity<Void> connectCouple(@PathVariable(name = "memberId") Long memberId, @RequestBody @Valid CoupleConnectRequest coupleConnectRequest){
+    public ResponseEntity<Void> connectCouple(Authentication authentication, @RequestBody @Valid CoupleConnectRequest coupleConnectRequest){
+        Long memberId = ((CustomUserDetails) authentication.getPrincipal()).getMemberId();
         coupleService.createCouple(memberId, coupleConnectRequest);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/members/{memberId}/couples")
+    @DeleteMapping("/couples")
     @Operation(summary = "커플 연결 해제")
-    public ResponseEntity<Void> disconnectCouple(@PathVariable(name = "memberId") Long memberId){
+    public ResponseEntity<Void> disconnectCouple(Authentication authentication){
+        Long memberId = ((CustomUserDetails) authentication.getPrincipal()).getMemberId();
         coupleService.deleteCouple(memberId);
         return ResponseEntity.ok().build();
     }
