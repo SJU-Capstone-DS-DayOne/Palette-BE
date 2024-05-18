@@ -7,7 +7,7 @@ public record MemberJoinRequest(
         @NotBlank String email,
         @NotBlank String password,
         @NotBlank String nickname,
-        @NotBlank Gender gender
+        Gender gender
 ) {
 
 }

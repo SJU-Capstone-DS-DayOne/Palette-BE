@@ -1,5 +1,6 @@
 package kr.ac.sejong.ds.palette.jwt;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletInputStream;
@@ -8,6 +9,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import kr.ac.sejong.ds.palette.jwt.service.JwtService;
 import kr.ac.sejong.ds.palette.jwt.util.JWTUtil;
 import kr.ac.sejong.ds.palette.jwt.dto.MemberLoginRequest;
+import kr.ac.sejong.ds.palette.member.dto.response.MemberLoginResponse;
+import kr.ac.sejong.ds.palette.member.entity.Member;
+import kr.ac.sejong.ds.palette.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,6 +23,7 @@ import org.springframework.util.StreamUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 import static kr.ac.sejong.ds.palette.jwt.util.JWTUtil.*;
 
@@ -28,6 +33,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
     private final JwtService jwtService;
+    private final MemberRepository memberRepository;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -75,6 +81,20 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         response.setHeader("access", access);
         response.setHeader("Set-Cookie", createCookie("refresh", refresh).toString());
         response.setStatus(HttpStatus.OK.value());
+
+        // 유저 ID 응답
+        ObjectMapper objectMapper = new ObjectMapper();
+        response.setContentType("application/json");
+        response.setCharacterEncoding("utf-8");
+        Member member = memberRepository.findByEmail(email).get();
+        try {
+            String result = objectMapper.writeValueAsString(MemberLoginResponse.of(member));
+            response.getWriter().write(result);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     // 로그인 실패시 실행하는 메소드

@@ -4,7 +4,7 @@ import kr.ac.sejong.ds.palette.common.exception.BadRequestException;
 import kr.ac.sejong.ds.palette.member.dto.request.MemberJoinRequest;
 import kr.ac.sejong.ds.palette.member.dto.request.MemberNicknameUpdateRequest;
 import kr.ac.sejong.ds.palette.member.dto.response.MemberJoinResponse;
-import kr.ac.sejong.ds.palette.member.dto.response.MemberResponse;
+import kr.ac.sejong.ds.palette.member.dto.response.MemberInfoResponse;
 import kr.ac.sejong.ds.palette.member.entity.Gender;
 import kr.ac.sejong.ds.palette.member.entity.Member;
 import kr.ac.sejong.ds.palette.member.repository.MemberRepository;
@@ -44,10 +44,10 @@ public class MemberService {
         return MemberJoinResponse.of(member);
     }
 
-    public MemberResponse getMember(Long memberId){
+    public MemberInfoResponse getMemberInfo(Long memberId){
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER_ID));
-        return MemberResponse.of(member);
+        return MemberInfoResponse.of(member);
     }
 
     @Transactional
