@@ -24,4 +24,10 @@ public class CoupleController {
         coupleService.createCouple(memberId, coupleConnectRequest);
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping("/members/{memberId}/couples")
+    public ResponseEntity<Void> disconnectCouple(@PathVariable(name = "memberId") Long memberId){
+        coupleService.deleteCouple(memberId);
+        return ResponseEntity.ok().build();
+    }
 }

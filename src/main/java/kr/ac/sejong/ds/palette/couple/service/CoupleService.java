@@ -17,8 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static kr.ac.sejong.ds.palette.common.exception.ExceptionCode.NOT_FOUND_COUPLE_CODE;
-import static kr.ac.sejong.ds.palette.common.exception.ExceptionCode.NOT_FOUND_MEMBER_ID;
+import static kr.ac.sejong.ds.palette.common.exception.ExceptionCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -30,10 +29,14 @@ public class CoupleService {
 
     @Transactional
     public CoupleCodeResponse getCoupleCode(Long memberId){
-        Member member = memberRepository.findById(memberId)  // 멤버 존재 여부 확인
+        // 멤버 존재 여부 확인
+        Member member = memberRepository.findById(memberId)
                     .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER_ID));
 
-        Optional<CoupleCode> coupleCode = coupleCodeRepository.findByMemberId(memberId);  // 해당 멤버의 커플 코드 조회
+        // 커플이라면 커플 코드 생성 요청이 오지 않으므로 커플 여부 확인 필요 없음
+
+        // 해당 멤버의 커플 코드 조회
+        Optional<CoupleCode> coupleCode = coupleCodeRepository.findByMemberId(memberId);
 
         // 커플 코드가 이미 존재하는 경우 해당 커플 코드 응답
         if(coupleCode.isPresent())
@@ -54,11 +57,17 @@ public class CoupleService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER_ID));
 
+        // 해당 멤버 커플 여부 확인 (동시에 코드 입력 시 발생 가능)
+        boolean isCouple = member.getGender() == Gender.MALE ?
+                coupleRepository.existsByMaleId(memberId) : coupleRepository.existsByFemaleId(memberId);
+        if(isCouple)
+            throw new BadRequestException(ALREADY_CONNECTED_MEMBER);
+
         // 연인의 커플 코드 조회 (본인의 커플 코드 제외)
-        // (이미 커플이라면, 커플 코드가 존재하지 않으므로 커플인 멤버에 대한 필터링 필요 없음)
+        // (상대가 이미 커플이라면, 커플 코드가 존재하지 않으므로 커플인 멤버에 대한 필터링 필요 없음)
         CoupleCode loverCoupleCode = coupleCodeRepository.findByCodeAndMemberIdNot(coupleConnectRequest.loverCode(), memberId)
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_COUPLE_CODE));
-        
+
         // 연인 엔티티 가져오기
         Member lover = loverCoupleCode.getMember();
 
@@ -71,7 +80,17 @@ public class CoupleService {
         if(coupleCode.isPresent())
             coupleCodeRepository.delete(coupleCode.get());
         coupleCodeRepository.delete(loverCoupleCode);
+    }
 
+    public void deleteCouple(Long memberId) {
+        // 멤버 존재 여부 확인
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER_ID));
+
+        Couple couple = coupleRepository.findByMaleIdOrFemaleId(memberId)
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_COUPLE_OF_MEMBER));
+
+        coupleRepository.delete(couple);
     }
 
     // 중복되지 않는 6자리 커플 코드를 생성함

@@ -11,6 +11,8 @@ public enum ExceptionCode {
 
     DUPLICATED_MEMBER_EMAIL(1001, "중복된 이메일입니다."),
     NOT_FOUND_MEMBER_ID(1002, "요청한 ID에 해당하는 멤버가 존재하지 않습니다."),
+    NOT_FOUND_COUPLE_OF_MEMBER(1003, "해당 유저는 커플이 아닙니다."),
+    ALREADY_CONNECTED_MEMBER(1004, "이미 연결된 커플입니다."),
 
     NOT_FOUND_COUPLE_CODE(2001, "해당 커플 코드는 존재하지 않습니다.")
 
