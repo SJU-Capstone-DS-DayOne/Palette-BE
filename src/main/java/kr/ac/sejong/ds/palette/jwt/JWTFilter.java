@@ -63,11 +63,12 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
-        // 토큰에서 email 획득
+        // 토큰에서 memberId, email 획득
+        Long memberId = jwtUtil.getMemberId(accessToken);
         String email = jwtUtil.getEmail(accessToken);
 
         // Member를 생성하여 값 설정
-        Member member = new Member(email, "tmp", "tmp", Gender.MALE);
+        Member member = new Member(memberId, email, "tmp", "tmp", Gender.MALE);
 
         // UserDetails에 회원 정보 객체 담기
         CustomUserDetails customUserDetails = new CustomUserDetails(member);
