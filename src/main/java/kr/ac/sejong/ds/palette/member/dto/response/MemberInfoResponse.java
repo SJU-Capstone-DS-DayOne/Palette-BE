@@ -4,7 +4,7 @@ import kr.ac.sejong.ds.palette.member.entity.Gender;
 import kr.ac.sejong.ds.palette.member.entity.Member;
 
 public record MemberInfoResponse(
-        Long id,
+        Long memberId,
         String email,
         String nickname,
         Gender gender
