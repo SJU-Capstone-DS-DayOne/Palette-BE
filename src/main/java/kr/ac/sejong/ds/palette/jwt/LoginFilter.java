@@ -68,11 +68,13 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) {
 
         // 유저 정보
-        String email = authentication.getName();
+        Member member = memberRepository.findByEmail(authentication.getName()).get();
+        Long memberId = member.getId();
+        String email = member.getEmail();
 
         // 토큰 생성
-        String access = jwtUtil.createJwt("access", email, ACCESS_TOKEN_EXP_MS);  // 1시간
-        String refresh = jwtUtil.createJwt("refresh", email, REFRESH_TOKEN_EXP_MS);  // 24시간
+        String access = jwtUtil.createJwt("access", memberId, email, ACCESS_TOKEN_EXP_MS);  // 1시간
+        String refresh = jwtUtil.createJwt("refresh", memberId, email, REFRESH_TOKEN_EXP_MS);  // 24시간
 
         // Refresh 토큰 저장
         jwtService.addRefreshToken(email, refresh, REFRESH_TOKEN_EXP_MS);
@@ -86,7 +88,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         ObjectMapper objectMapper = new ObjectMapper();
         response.setContentType("application/json");
         response.setCharacterEncoding("utf-8");
-        Member member = memberRepository.findByEmail(email).get();
         try {
             String result = objectMapper.writeValueAsString(MemberLoginResponse.of(member));
             response.getWriter().write(result);
