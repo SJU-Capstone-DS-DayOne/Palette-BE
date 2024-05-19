@@ -1,6 +1,7 @@
 package kr.ac.sejong.ds.palette.member.service;
 
-import kr.ac.sejong.ds.palette.common.exception.BadRequestException;
+import kr.ac.sejong.ds.palette.common.exception.member.DuplicatedEmailException;
+import kr.ac.sejong.ds.palette.common.exception.member.NotFoundMemberException;
 import kr.ac.sejong.ds.palette.member.dto.request.MemberJoinRequest;
 import kr.ac.sejong.ds.palette.member.dto.request.MemberNicknameUpdateRequest;
 import kr.ac.sejong.ds.palette.member.dto.response.MemberJoinResponse;
@@ -12,9 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import static kr.ac.sejong.ds.palette.common.exception.ExceptionCode.DUPLICATED_MEMBER_EMAIL;
-import static kr.ac.sejong.ds.palette.common.exception.ExceptionCode.NOT_FOUND_MEMBER_ID;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +33,7 @@ public class MemberService {
 
 
         if(memberRepository.existsByEmail(email)){
-            throw new BadRequestException(DUPLICATED_MEMBER_EMAIL);
+            throw new DuplicatedEmailException();
         }
 
         Member member = new Member(email, password, nickname, gender);
@@ -46,21 +44,21 @@ public class MemberService {
 
     public MemberInfoResponse getMemberInfo(Long memberId){
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER_ID));
+                .orElseThrow(NotFoundMemberException::new);
         return MemberInfoResponse.of(member);
     }
 
     @Transactional
     public void updateNickname(Long memberId, final MemberNicknameUpdateRequest memberNicknameUpdateRequest){
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER_ID));
+                .orElseThrow(NotFoundMemberException::new);
         member.updateNickname(memberNicknameUpdateRequest);
     }
 
     @Transactional
     public void deleteMember(Long memberId){
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER_ID));
+                .orElseThrow(NotFoundMemberException::new);
         memberRepository.delete(member);
     }
 }
