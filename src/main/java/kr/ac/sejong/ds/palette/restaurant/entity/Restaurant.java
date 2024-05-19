@@ -20,13 +20,19 @@ public class Restaurant extends BaseEntity {
     @Enumerated(value = EnumType.STRING)
     private Group type;
 
+    private String mood;
+
     private String summary;
+
+    private String district;
 
     private String address;
 
     private Double lat;
 
     private Double lng;
+
+    private String distFromStation;
 
     private String openingHours;
 
