@@ -30,6 +30,11 @@ public class ReviewService {
     private final RestaurantRepository restaurantRepository;
 
     public List<ReviewResponse> getAllReviewByRestaurant(Long restaurantId){
+        // 레스토랑 존재 여부 확인
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(NotFoundRestaurantException::new);
+
+        // 해당 레스토랑의 리뷰 + 멤버 정보를 가져옴
         List<ReviewResponse> reviewResponseList = reviewRepository.findAllWithMemberByRestaurantId(restaurantId)
                 .stream().map(review -> ReviewResponse.of(review)).collect(Collectors.toList());
         return reviewResponseList;
