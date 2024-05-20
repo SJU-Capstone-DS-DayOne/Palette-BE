@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
-    @Query("select r from review r join fetch r.member where r.restaurant.id = :restaurantId")
+    @Query("select r from Review r join fetch r.member where r.restaurant.id = :restaurantId")
     List<Review> findAllWithMemberByRestaurantId(Long restaurantId);
 }
