@@ -34,4 +34,53 @@ public class ReviewService {
                 .stream().map(review -> ReviewResponse.of(review)).collect(Collectors.toList());
         return reviewResponseList;
     }
+
+    @Transactional
+    public void createReview(ReviewCreateRequest reviewCreateRequest, Long memberId, Long restaurantId) {
+        // 멤버 존재 여부 확인
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(NotFoundMemberException::new);
+
+        // 레스토랑 존재 여부 확인
+        Restaurant restaurant = restaurantRepository.findById(restaurantId)
+                .orElseThrow(NotFoundRestaurantException::new);
+
+        Review review = new Review(reviewCreateRequest.content(), member, restaurant);
+        reviewRepository.save(review);
+    }
+
+    @Transactional
+    public void updateReview(ReviewUpdateRequest reviewUpdateRequest, Long memberId, Long reviewId){
+        // 멤버 존재 여부 확인
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(NotFoundMemberException::new);
+
+        // 리뷰 조회
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(NotFoundReviewException::new);
+
+        // 본인의 리뷰인지 검증
+        if(review.getMember().getId() != memberId)
+            throw new NotMatchingReviewException();
+
+        review.updateReview(reviewUpdateRequest.content());
+    }
+
+    @Transactional
+    public void deleteReview(Long memberId, Long reviewId){
+        // 멤버 존재 여부 확인
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(NotFoundMemberException::new);
+
+        // 리뷰 조회
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(NotFoundReviewException::new);
+
+        // 본인의 리뷰인지 검증
+        if(review.getMember().getId() != memberId)
+            throw new NotMatchingReviewException();
+
+        reviewRepository.delete(review);
+    }
+
 }
