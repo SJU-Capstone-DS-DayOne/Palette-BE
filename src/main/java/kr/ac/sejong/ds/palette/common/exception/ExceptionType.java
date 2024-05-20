@@ -14,7 +14,14 @@ public enum ExceptionType {
     NOT_FOUND_COUPLE_CODE(HttpStatus.NOT_FOUND, "해당 커플 코드는 존재하지 않습니다."),
     NOT_COUPLE_MEMBER(HttpStatus.BAD_REQUEST, "해당 유저는 커플이 아닙니다."),
     ALREADY_CONNECTED_MEMBER(HttpStatus.BAD_REQUEST, "이미 연결된 커플입니다."),
-    INVALID_GENDER_FOR_COUPLE(HttpStatus.BAD_REQUEST, "동성은 커플 연결을 할 수 있습니다.");
+    INVALID_GENDER_FOR_COUPLE(HttpStatus.BAD_REQUEST, "동성은 커플 연결을 할 수 있습니다."),
+
+    // Review
+    NOT_FOUND_REVIEW(HttpStatus.NOT_FOUND, "해당 리뷰는 존재하지 않습니다."),
+    NOT_MATCHING_REVIEW(HttpStatus.BAD_REQUEST, "본인의 리뷰만 수정/삭제할 수 있습니다."),
+
+    // Restaurant
+    NOT_FOUND_RESTAURANT(HttpStatus.NOT_FOUND, "해당 레스토랑은 존재하지 않습니다.");
 
 //    // JWT
 //    USER_INFORMATION_NOT_FOUND(HttpStatus.NOT_FOUND, "유저 정보가 없습니다."),
