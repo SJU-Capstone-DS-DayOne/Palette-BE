@@ -50,8 +50,12 @@ public class ReviewService {
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(NotFoundRestaurantException::new);
 
+        // 리뷰 생성
         Review review = new Review(reviewCreateRequest.content(), member, restaurant);
         reviewRepository.save(review);
+
+        // 레스토랑의 리뷰 개수 증가
+        restaurant.increaseReviewCount();
     }
 
     @Transactional
@@ -85,7 +89,11 @@ public class ReviewService {
         if(review.getMember().getId() != memberId)
             throw new NotMatchingReviewException();
 
+        // 리뷰 삭제
         reviewRepository.delete(review);
+
+        // 레스토랑의 리뷰 개수 감소
+        review.getRestaurant().decreaseReviewCount();
     }
 
 }

@@ -39,4 +39,12 @@ public class Restaurant extends BaseEntity {
     private String phone;
 
     private int reviewCount;
+
+    public void increaseReviewCount(){
+        this.reviewCount++;
+    }
+
+    public void decreaseReviewCount(){
+        this.reviewCount--;  // 리뷰가 존재할 때 실행되므로 음수가 될 수 없음
+    }
 }
