@@ -26,4 +26,14 @@ public class Review extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
+
+    public Review(String content, Member member, Restaurant restaurant) {
+        this.content = content;
+        this.member = member;
+        this.restaurant = restaurant;
+    }
+
+    public void updateReview(String content){
+        this.content = content;
+    }
 }
