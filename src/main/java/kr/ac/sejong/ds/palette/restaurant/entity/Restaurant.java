@@ -38,5 +38,5 @@ public class Restaurant extends BaseEntity {
 
     private String phone;
 
-    private int review_count;
+    private int reviewCount;
 }
