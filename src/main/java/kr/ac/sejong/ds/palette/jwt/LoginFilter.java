@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import kr.ac.sejong.ds.palette.jwt.service.JwtService;
@@ -22,6 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.util.StreamUtils;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
@@ -101,7 +103,14 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     // 로그인 실패시 실행하는 메소드
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
-        // 로그인 실패시 401 응답 코드 반환
+        // 로그인 실패시 401 응답 코드와 내용 반환
+        response.setCharacterEncoding("utf-8");
         response.setStatus(401);
+        try {
+            PrintWriter writer = response.getWriter();
+            writer.write("로그인 인증에 실패하였습니다.");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
