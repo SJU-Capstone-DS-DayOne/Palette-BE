@@ -6,6 +6,9 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -19,8 +22,6 @@ public class Restaurant extends BaseEntity {
 
     @Enumerated(value = EnumType.STRING)
     private Group type;
-
-    private String mood;
 
     private String summary;
 
@@ -39,6 +40,9 @@ public class Restaurant extends BaseEntity {
     private String phone;
 
     private int reviewCount;
+
+    @OneToMany(mappedBy = "restaurant")
+    private List<RestaurantCategory> restaurantCategoryList = new ArrayList<>();
 
     public void increaseReviewCount(){
         this.reviewCount++;
