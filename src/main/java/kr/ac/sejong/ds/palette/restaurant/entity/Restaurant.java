@@ -21,7 +21,7 @@ public class Restaurant extends BaseEntity {
     private String name;
 
     @Enumerated(value = EnumType.STRING)
-    private Group type;
+    private Type type;
 
     private String summary;
 
