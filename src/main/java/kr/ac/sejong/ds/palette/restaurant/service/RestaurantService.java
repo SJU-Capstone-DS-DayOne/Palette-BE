@@ -66,7 +66,7 @@ public class RestaurantService {
 //        } catch (JsonProcessingException e) {
 //            throw new RuntimeException(e);
 //        }
-//        return null;
+        return null;
     }
 
     public RestaurantResponse getRestaurant(Long restaurantId) {
