@@ -17,7 +17,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Tag(name = "레스토랑 (Restaurant")
@@ -30,11 +33,18 @@ public class RestaurantController {
     // 회원가입 시 선호 레스토랑 선택을 위한 무작위 레스토랑 목록 응답
 //    @GetMapping("/join/restaurants")
 
-    @Operation(summary = "레스토랑 추천")
+    @Operation(summary = "커플 레스토랑 추천")
     @GetMapping("/recommended-restaurants")
-    public ResponseEntity<List<RestaurantOverviewResponse>> getRecommendedRestaurants(Authentication authentication){
+    public ResponseEntity<List<RestaurantOverviewResponse>> getRecommendedRestaurants(
+            Authentication authentication,
+            @RequestParam(name = "district") String district,
+            @RequestParam(name = "rst", defaultValue = "false") Boolean rst,
+            @RequestParam(name = "cafe", defaultValue = "false") Boolean cafe,
+            @RequestParam(name = "bar", defaultValue = "false") Boolean bar
+    ) {
         Long memberId = ((CustomUserDetails) authentication.getPrincipal()).getMemberId();
-        List<RestaurantOverviewResponse> restaurantOverviewResponseList = restaurantService.getRecommendedRestaurantListByMember(memberId);
+        Map<String, Boolean> restaurantTypeMap = Map.of("rst", rst, "cafe", cafe, "bar", bar);
+        List<RestaurantOverviewResponse> restaurantOverviewResponseList = restaurantService.getRecommendedRestaurantListByMemberAndDistrict(memberId, district, restaurantTypeMap);
         return ResponseEntity.ok().body(restaurantOverviewResponseList);
     }
 
