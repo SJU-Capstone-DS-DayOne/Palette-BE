@@ -36,8 +36,8 @@ public class RestaurantService {
     private final MenuRepository menuRepository;
     private final ReviewRepository reviewRepository;
 
-    @Value("${server-info.model.url}")
-    private String modelUrl;
+//    @Value("${server-info.model.url}")
+//    private String modelUrl;
 
     // 1. 이거 랜덤으로? 아니면 2. 리뷰 많은 레스토랑?
     // 1. 랜덤 + 메뉴 사진 있는 것만 가져오게 하고 싶은데, 쿼리가 너무 복잡해져서
