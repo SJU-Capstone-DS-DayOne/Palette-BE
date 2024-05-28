@@ -36,7 +36,7 @@ public class ReviewService {
 
         // 해당 레스토랑의 리뷰 + 멤버 정보를 가져옴
         List<ReviewResponse> reviewResponseList = reviewRepository.findAllWithMemberByRestaurantId(restaurantId)
-                .stream().map(review -> ReviewResponse.of(review)).collect(Collectors.toList());
+                .stream().map(ReviewResponse::of).collect(Collectors.toList());
         return reviewResponseList;
     }
 
