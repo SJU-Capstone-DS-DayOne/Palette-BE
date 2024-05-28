@@ -13,6 +13,7 @@ import kr.ac.sejong.ds.palette.restaurant.dto.response.RestaurantResponse;
 import kr.ac.sejong.ds.palette.restaurant.dto.response.model.RecommendedRestaurantModelResponse;
 import kr.ac.sejong.ds.palette.restaurant.entity.Category;
 import kr.ac.sejong.ds.palette.restaurant.entity.Restaurant;
+import kr.ac.sejong.ds.palette.restaurant.entity.RestaurantCategory;
 import kr.ac.sejong.ds.palette.restaurant.repository.CategoryRepository;
 import kr.ac.sejong.ds.palette.restaurant.repository.RestaurantCategoryRepository;
 import kr.ac.sejong.ds.palette.restaurant.repository.RestaurantRepository;
@@ -25,6 +26,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -50,9 +52,6 @@ public class RestaurantService {
 
     public List<RestaurantOverviewResponse> getRecommendedRestaurantListByMemberAndDistrict(Long memberId, String district, Map<String, Boolean> restaurantTypeMap) {
 
-        System.out.println(district);
-        System.out.println(modelUrl);
-
         Couple couple = coupleRepository.findByMaleIdOrFemaleId(memberId, memberId)
                 .orElseThrow(NotCoupleMemberException::new);
 
@@ -60,22 +59,36 @@ public class RestaurantService {
         WebClient webClient = WebClient.create(modelUrl);
 
         String response = webClient.get().uri(
-                uriBuilder -> uriBuilder.path("/recommend/couple").queryParam("user1", couple.getMale().getId()).queryParam("user2", couple.getFemale().getId()).build()
+                uriBuilder -> uriBuilder.path("/recommend/couple")
+                        .queryParam("user1", couple.getMale().getId())
+                        .queryParam("user2", couple.getFemale().getId())
+//                        .queryParam("district", district)
+                        .build()
         ).retrieve().bodyToMono(String.class).block();
 
         System.out.println(response);
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        try {
-//            RecommendedRestaurantModelResponse recommendedRestaurantModelResponse = objectMapper.readValue(response, RecommendedRestaurantModelResponse.class);
-//            List<Long> recommendedRestaurants = recommendedRestaurantModelResponse.getResult();
-//            List<Restaurant> restaurants = restaurantService.findRestaurantsByIds(recommendedRestaurants);
-//            List<RestaurantResponseDto> restaurantResponseDto = restaurantService.findRestaurantsByIds(recommendedRestaurants)
-//                    .stream().map(RestaurantResponseDto::new).collect(Collectors.toList());
-//            return restaurantResponseDto;
-//        } catch (JsonProcessingException e) {
-//            throw new RuntimeException(e);
-//        }
-        return null;
+        ObjectMapper objectMapper = new ObjectMapper();
+        RecommendedRestaurantModelResponse recommendedRestaurantModelResponse = null;
+        try {
+            recommendedRestaurantModelResponse = objectMapper.readValue(response, RecommendedRestaurantModelResponse.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+        List<Long> rstRestaurantIdList = recommendedRestaurantModelResponse.RST();
+        List<Long> cafeRestaurantIdList = recommendedRestaurantModelResponse.CAFE();
+        List<Long> barRestaurantIdList = recommendedRestaurantModelResponse.BAR();
+        List<Restaurant> rstRestaurantList = restaurantRepository.findAllByIdOrderByIdsWithRankedMenuAndCategory(
+                rstRestaurantIdList, rstRestaurantIdList.stream().map(String::valueOf).collect(Collectors.joining(","))
+        );
+
+        return rstRestaurantList.stream().map(
+                restaurant -> RestaurantOverviewResponse.of(
+                        restaurant,
+                        restaurant.getRestaurantCategoryList().stream().map(RestaurantCategory::getCategory).distinct().toList(),
+                        restaurant.getMenuList()
+                )
+        ).toList();
     }
 
     public RestaurantResponse getRestaurant(Long restaurantId) {
