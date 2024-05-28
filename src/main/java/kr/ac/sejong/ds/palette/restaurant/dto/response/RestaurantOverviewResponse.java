@@ -7,6 +7,7 @@ import kr.ac.sejong.ds.palette.restaurant.entity.Type;
 import kr.ac.sejong.ds.palette.restaurant.entity.Restaurant;
 
 import java.util.List;
+import java.util.Set;
 
 public record RestaurantOverviewResponse(
         Long id,
@@ -18,11 +19,11 @@ public record RestaurantOverviewResponse(
         List<CategoryResponse> categoryResponseList,
         List<RankedMenuResponse> rankedMenuResponseList
 ) {
-    public static RestaurantOverviewResponse of(Restaurant rst, List<Category> categoryList, List<Menu> menuList) {
+    public static RestaurantOverviewResponse of(Restaurant rst, List<Category> categoryList, Set<Menu> menuList) {
         return new RestaurantOverviewResponse(
                 rst.getId(), rst.getName(), rst.getType(), rst.getSummary(), rst.getLat(), rst.getLng(),
-                categoryList.stream().map(category -> CategoryResponse.of(category)).toList(),
-                menuList.stream().map(menu -> RankedMenuResponse.of(menu)).toList()
+                categoryList.stream().map(CategoryResponse::of).toList(),
+                menuList.stream().map(RankedMenuResponse::of).toList()
         );
     }
 }

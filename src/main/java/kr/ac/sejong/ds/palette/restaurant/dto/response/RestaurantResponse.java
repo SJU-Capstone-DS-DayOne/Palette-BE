@@ -26,8 +26,8 @@ public record RestaurantResponse(
     public static RestaurantResponse of(Restaurant rst, List<Category> categoryList, List<Menu> menuList) {
         return new RestaurantResponse(
                 rst.getId(), rst.getName(), rst.getType(), rst.getSummary(), rst.getAddress(), rst.getLat(), rst.getLng(), rst.getDistFromStation(), rst.getOpeningHours(), rst.getPhone(), rst.getReviewCount(),
-                categoryList.stream().map(category -> CategoryResponse.of(category)).toList(),
-                menuList.stream().map(menu -> MenuResponse.of(menu)).toList()
+                categoryList.stream().map(CategoryResponse::of).toList(),
+                menuList.stream().map(MenuResponse::of).toList()
         );
     }
 }
