@@ -2,12 +2,15 @@ package kr.ac.sejong.ds.palette.restaurant.entity;
 
 import jakarta.persistence.*;
 import kr.ac.sejong.ds.palette.common.entity.BaseEntity;
+import kr.ac.sejong.ds.palette.menu.entity.Menu;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -43,6 +46,9 @@ public class Restaurant extends BaseEntity {
 
     @OneToMany(mappedBy = "restaurant")
     private List<RestaurantCategory> restaurantCategoryList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "restaurant")
+    private Set<Menu> menuList = new HashSet<>();
 
     public void increaseReviewCount(){
         this.reviewCount++;
