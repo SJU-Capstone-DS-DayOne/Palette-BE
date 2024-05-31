@@ -3,7 +3,7 @@ package kr.ac.sejong.ds.palette.member.service;
 import kr.ac.sejong.ds.palette.common.exception.member.DuplicatedEmailException;
 import kr.ac.sejong.ds.palette.common.exception.member.NotFoundMemberException;
 import kr.ac.sejong.ds.palette.member.dto.request.MemberJoinRequest;
-import kr.ac.sejong.ds.palette.member.dto.request.MemberNicknameUpdateRequest;
+import kr.ac.sejong.ds.palette.member.dto.request.MemberUpdateRequest;
 import kr.ac.sejong.ds.palette.member.dto.response.MemberJoinResponse;
 import kr.ac.sejong.ds.palette.member.dto.response.MemberInfoResponse;
 import kr.ac.sejong.ds.palette.member.entity.Gender;
@@ -30,13 +30,15 @@ public class MemberService {
         );
         String nickname = memberJoinRequest.nickname();
         Gender gender = memberJoinRequest.gender();
+        String birthOfDate = memberJoinRequest.birthOfDate();
+        String phone = memberJoinRequest.phone();
 
 
         if(memberRepository.existsByEmail(email)){
             throw new DuplicatedEmailException();
         }
 
-        Member member = new Member(email, password, nickname, gender);
+        Member member = new Member(email, password, nickname, gender, birthOfDate, phone);
         memberRepository.save(member);
 
         return MemberJoinResponse.of(member);
@@ -49,10 +51,10 @@ public class MemberService {
     }
 
     @Transactional
-    public void updateNickname(Long memberId, final MemberNicknameUpdateRequest memberNicknameUpdateRequest){
+    public void updateMemberInfo(Long memberId, final MemberUpdateRequest memberUpdateRequest){
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(NotFoundMemberException::new);
-        member.updateNickname(memberNicknameUpdateRequest);
+        member.updateMemberInfo(memberUpdateRequest);
     }
 
     @Transactional

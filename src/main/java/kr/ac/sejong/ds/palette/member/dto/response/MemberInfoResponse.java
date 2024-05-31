@@ -7,11 +7,15 @@ public record MemberInfoResponse(
         Long memberId,
         String email,
         String nickname,
-        Gender gender
-        // 연인 멤버 닉네임 추가?
+        Gender gender,
+        String birthOfDate,
+        String phone,
+        Boolean preferenceYn
 ) {
 
     public static MemberInfoResponse of(Member member) {
-        return new MemberInfoResponse(member.getId(), member.getEmail(), member.getNickname(), member.getGender());
+        return new MemberInfoResponse(
+                member.getId(), member.getEmail(), member.getNickname(), member.getGender(), member.getBirthOfDate(), member.getPhone(), member.isPreferenceYn()
+        );
     }
 }

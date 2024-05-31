@@ -68,7 +68,7 @@ public class JWTFilter extends OncePerRequestFilter {
         String email = jwtUtil.getEmail(accessToken);
 
         // Member를 생성하여 값 설정
-        Member member = new Member(memberId, email, "tmp", "tmp", Gender.MALE);
+        Member member = new Member(memberId, email, "tmp", "tmp", Gender.MALE, "20000101", "01012345678");
 
         // UserDetails에 회원 정보 객체 담기
         CustomUserDetails customUserDetails = new CustomUserDetails(member);

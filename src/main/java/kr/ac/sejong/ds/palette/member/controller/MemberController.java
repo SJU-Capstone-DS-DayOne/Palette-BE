@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import kr.ac.sejong.ds.palette.jwt.dto.CustomUserDetails;
 import kr.ac.sejong.ds.palette.member.dto.request.MemberJoinRequest;
-import kr.ac.sejong.ds.palette.member.dto.request.MemberNicknameUpdateRequest;
+import kr.ac.sejong.ds.palette.member.dto.request.MemberUpdateRequest;
 import kr.ac.sejong.ds.palette.member.dto.response.MemberJoinResponse;
 import kr.ac.sejong.ds.palette.member.dto.response.MemberInfoResponse;
 import kr.ac.sejong.ds.palette.member.service.MemberService;
@@ -36,11 +36,11 @@ public class MemberController {
         return ResponseEntity.ok().body(memberInfoResponse);
     }
 
-    @Operation(summary = "회원 닉네임 수정")
+    @Operation(summary = "회원 정보 수정")
     @PutMapping("/members")
-    public ResponseEntity<Void> updateMemberNickname(Authentication authentication, @RequestBody @Valid MemberNicknameUpdateRequest memberNicknameUpdateRequest){
+    public ResponseEntity<Void> updateMemberInfo(Authentication authentication, @RequestBody @Valid MemberUpdateRequest memberUpdateRequest){
         Long memberId = ((CustomUserDetails) authentication.getPrincipal()).getMemberId();
-        memberService.updateNickname(memberId, memberNicknameUpdateRequest);
+        memberService.updateMemberInfo(memberId, memberUpdateRequest);
         return ResponseEntity.ok().build();
     }
 
