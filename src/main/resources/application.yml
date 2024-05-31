@@ -19,6 +19,10 @@ logging:
 server:
   port: 443
 
+server-info:
+  model:
+    url: http://15.164.27.229:8000
+
 springdoc:
   packages-to-scan: kr.ac.sejong.ds.palette  # Swagger 문서를 생성할 컨트롤러가 포함된 패키지를 지정
   paths-to-match: /**  # 문서화할 경로를 지정. /**는 모든 경로

@@ -1,7 +1,6 @@
 package kr.ac.sejong.ds.palette.restaurant.entity;
 
 import jakarta.persistence.*;
-import kr.ac.sejong.ds.palette.category.entity.Category;
 import kr.ac.sejong.ds.palette.common.entity.BaseEntity;
 import lombok.AccessLevel;
 import lombok.Getter;

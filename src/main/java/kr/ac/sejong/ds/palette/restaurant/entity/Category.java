@@ -1,4 +1,4 @@
-package kr.ac.sejong.ds.palette.category.entity;
+package kr.ac.sejong.ds.palette.restaurant.entity;
 
 import jakarta.persistence.*;
 import kr.ac.sejong.ds.palette.common.entity.BaseEntity;
