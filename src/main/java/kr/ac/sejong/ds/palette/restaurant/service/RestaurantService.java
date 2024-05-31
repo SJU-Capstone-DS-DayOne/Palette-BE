@@ -8,6 +8,7 @@ import kr.ac.sejong.ds.palette.couple.entity.Couple;
 import kr.ac.sejong.ds.palette.couple.repository.CoupleRepository;
 import kr.ac.sejong.ds.palette.menu.entity.Menu;
 import kr.ac.sejong.ds.palette.menu.repository.MenuRepository;
+import kr.ac.sejong.ds.palette.restaurant.dto.response.RecommendedRestaurantResponse;
 import kr.ac.sejong.ds.palette.restaurant.dto.response.RestaurantOverviewResponse;
 import kr.ac.sejong.ds.palette.restaurant.dto.response.RestaurantResponse;
 import kr.ac.sejong.ds.palette.restaurant.dto.response.model.RecommendedRestaurantModelResponse;
@@ -50,7 +51,7 @@ public class RestaurantService {
         return null;
     }
 
-    public List<RestaurantOverviewResponse> getRecommendedRestaurantListByMemberAndDistrict(Long memberId, String district, Map<String, Boolean> restaurantTypeMap) {
+    public RecommendedRestaurantResponse getRecommendedRestaurantListByMemberAndDistrict(Long memberId, String district, Map<String, Boolean> restaurantTypeMap) {
 
         Couple couple = coupleRepository.findByMaleIdOrFemaleId(memberId, memberId)
                 .orElseThrow(NotCoupleMemberException::new);
@@ -66,7 +67,6 @@ public class RestaurantService {
                         .build()
         ).retrieve().bodyToMono(String.class).block();
 
-        System.out.println(response);
         ObjectMapper objectMapper = new ObjectMapper();
         RecommendedRestaurantModelResponse recommendedRestaurantModelResponse = null;
         try {
@@ -75,20 +75,52 @@ public class RestaurantService {
             throw new RuntimeException(e);
         }
 
-        List<Long> rstRestaurantIdList = recommendedRestaurantModelResponse.RST();
-        List<Long> cafeRestaurantIdList = recommendedRestaurantModelResponse.CAFE();
-        List<Long> barRestaurantIdList = recommendedRestaurantModelResponse.BAR();
-        List<Restaurant> rstRestaurantList = restaurantRepository.findAllByIdOrderByIdsWithRankedMenuAndCategory(
-                rstRestaurantIdList, rstRestaurantIdList.stream().map(String::valueOf).collect(Collectors.joining(","))
-        );
+        List<RestaurantOverviewResponse> rstRestaurantOverviewResponseList = null;
+        List<RestaurantOverviewResponse> cafeRestaurantOverviewResponseList = null;
+        List<RestaurantOverviewResponse> barRestaurantOverviewResponseList = null;
 
-        return rstRestaurantList.stream().map(
-                restaurant -> RestaurantOverviewResponse.of(
-                        restaurant,
-                        restaurant.getRestaurantCategoryList().stream().map(RestaurantCategory::getCategory).distinct().toList(),
-                        restaurant.getMenuList()
-                )
-        ).toList();
+        if (restaurantTypeMap.get("rst")){
+            List<Long> rstRestaurantIdList = recommendedRestaurantModelResponse.RST();
+            List<Restaurant> rstRestaurantList = restaurantRepository.findAllByIdOrderByIdsWithMenuAndCategory(
+                    rstRestaurantIdList, rstRestaurantIdList.stream().map(String::valueOf).collect(Collectors.joining(","))
+            );
+            rstRestaurantOverviewResponseList = rstRestaurantList.stream().map(
+                    restaurant -> RestaurantOverviewResponse.of(
+                            restaurant,
+                            restaurant.getRestaurantCategoryList().stream().map(RestaurantCategory::getCategory).collect(Collectors.toSet()),
+                            Menu.getRankedMenuList(restaurant.getMenuList().stream().distinct().toList())
+                    )
+            ).toList();
+        }
+        if (restaurantTypeMap.get("cafe")) {
+            List<Long> cafeRestaurantIdList = recommendedRestaurantModelResponse.CAFE();
+            List<Restaurant> cafeRestaurantList = restaurantRepository.findAllByIdOrderByIdsWithMenuAndCategory(
+                    cafeRestaurantIdList, cafeRestaurantIdList.stream().map(String::valueOf).collect(Collectors.joining(","))
+            );
+            cafeRestaurantOverviewResponseList = cafeRestaurantList.stream().map(
+                    restaurant -> RestaurantOverviewResponse.of(
+                            restaurant,
+                            restaurant.getRestaurantCategoryList().stream().map(RestaurantCategory::getCategory).collect(Collectors.toSet()),
+                            Menu.getRankedMenuList(restaurant.getMenuList().stream().distinct().toList())
+                    )
+            ).toList();
+        }
+        if (restaurantTypeMap.get("bar")) {
+            List<Long> barRestaurantIdList = recommendedRestaurantModelResponse.BAR();
+            List<Restaurant> barRestaurantList = restaurantRepository.findAllByIdOrderByIdsWithMenuAndCategory(
+                    barRestaurantIdList, barRestaurantIdList.stream().map(String::valueOf).collect(Collectors.joining(","))
+            );
+            barRestaurantOverviewResponseList = barRestaurantList.stream().map(
+                    restaurant -> RestaurantOverviewResponse.of(
+                            restaurant,
+                            restaurant.getRestaurantCategoryList().stream().map(RestaurantCategory::getCategory).collect(Collectors.toSet()),
+                            Menu.getRankedMenuList(restaurant.getMenuList().stream().distinct().toList())
+                    )
+            ).toList();
+        }
+        return new RecommendedRestaurantResponse(
+                rstRestaurantOverviewResponseList, cafeRestaurantOverviewResponseList, barRestaurantOverviewResponseList
+        );
     }
 
     public RestaurantResponse getRestaurant(Long restaurantId) {

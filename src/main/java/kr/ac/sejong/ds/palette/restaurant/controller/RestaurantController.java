@@ -1,11 +1,9 @@
 package kr.ac.sejong.ds.palette.restaurant.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.ac.sejong.ds.palette.jwt.dto.CustomUserDetails;
+import kr.ac.sejong.ds.palette.restaurant.dto.response.RecommendedRestaurantResponse;
 import kr.ac.sejong.ds.palette.restaurant.dto.response.RestaurantOverviewResponse;
 import kr.ac.sejong.ds.palette.restaurant.dto.response.RestaurantResponse;
 import kr.ac.sejong.ds.palette.restaurant.service.RestaurantService;
@@ -17,11 +15,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Tag(name = "레스토랑 (Restaurant")
 @RestController
@@ -35,7 +30,7 @@ public class RestaurantController {
 
     @Operation(summary = "커플 레스토랑 추천")
     @GetMapping("/recommended-restaurants")
-    public ResponseEntity<List<RestaurantOverviewResponse>> getRecommendedRestaurants(
+    public ResponseEntity<RecommendedRestaurantResponse> getRecommendedRestaurants(
             Authentication authentication,
             @RequestParam(name = "district") String district,
             @RequestParam(name = "rst", defaultValue = "false") Boolean rst,
@@ -44,8 +39,8 @@ public class RestaurantController {
     ) {
         Long memberId = ((CustomUserDetails) authentication.getPrincipal()).getMemberId();
         Map<String, Boolean> restaurantTypeMap = Map.of("rst", rst, "cafe", cafe, "bar", bar);
-        List<RestaurantOverviewResponse> restaurantOverviewResponseList = restaurantService.getRecommendedRestaurantListByMemberAndDistrict(memberId, district, restaurantTypeMap);
-        return ResponseEntity.ok().body(restaurantOverviewResponseList);
+        RecommendedRestaurantResponse recommendedRestaurantResponse = restaurantService.getRecommendedRestaurantListByMemberAndDistrict(memberId, district, restaurantTypeMap);
+        return ResponseEntity.ok().body(recommendedRestaurantResponse);
     }
 
     @Operation(summary = "레스토랑 상세 조회")

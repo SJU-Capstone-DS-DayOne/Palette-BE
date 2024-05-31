@@ -19,7 +19,7 @@ public record RestaurantOverviewResponse(
         List<CategoryResponse> categoryResponseList,
         List<RankedMenuResponse> rankedMenuResponseList
 ) {
-    public static RestaurantOverviewResponse of(Restaurant rst, List<Category> categoryList, Set<Menu> menuList) {
+    public static RestaurantOverviewResponse of(Restaurant rst, Set<Category> categoryList, List<Menu> menuList) {
         return new RestaurantOverviewResponse(
                 rst.getId(), rst.getName(), rst.getType(), rst.getSummary(), rst.getLat(), rst.getLng(),
                 categoryList.stream().map(CategoryResponse::of).toList(),
