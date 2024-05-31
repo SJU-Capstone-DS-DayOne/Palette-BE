@@ -45,16 +45,17 @@ public class Restaurant extends BaseEntity {
     private int reviewCount;
 
     @OneToMany(mappedBy = "restaurant")
-    private List<RestaurantCategory> restaurantCategoryList = new ArrayList<>();
+    private Set<RestaurantCategory> restaurantCategoryList = new HashSet<>();
 
     @OneToMany(mappedBy = "restaurant")
-    private Set<Menu> menuList = new HashSet<>();
+    private List<Menu> menuList = new ArrayList<>();
 
     public void increaseReviewCount(){
         this.reviewCount++;
     }
 
     public void decreaseReviewCount(){
-        this.reviewCount--;  // 리뷰가 존재할 때 실행되므로 음수가 될 수 없음
+        if (this.reviewCount > 0)  // 리뷰가 존재할 때 실행되므로 필요 없지 않을까? (비동기 방식일 경우를 대비?)
+            this.reviewCount--;
     }
 }
