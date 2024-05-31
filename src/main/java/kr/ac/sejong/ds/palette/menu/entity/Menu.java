@@ -7,6 +7,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -28,4 +30,7 @@ public class Menu extends BaseEntity {
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 
+    public static List<Menu> getRankedMenuList(List<Menu> menuList){
+        return menuList.stream().filter(menu -> menu.getRanking() != null).toList();
+    }
 }
