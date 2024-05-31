@@ -63,7 +63,7 @@ public class RestaurantService {
                 uriBuilder -> uriBuilder.path("/recommend/couple")
                         .queryParam("user1", couple.getMale().getId())
                         .queryParam("user2", couple.getFemale().getId())
-//                        .queryParam("district", district)
+                        .queryParam("district", district)
                         .build()
         ).retrieve().bodyToMono(String.class).block();
 
@@ -128,7 +128,6 @@ public class RestaurantService {
                 .orElseThrow(NotFoundRestaurantException::new);
         List<Category> categoryList = restaurantCategoryRepository.findAllCategoryByRestaurantId(restaurantId);
         List<Menu> menuList = menuRepository.findAllByRestaurantId(restaurantId);
-//        List<Review> reviewList = reviewRepository.findAllWithMemberByRestaurantId(restaurantId);
         return RestaurantResponse.of(restaurant, categoryList, menuList);
     }
 
