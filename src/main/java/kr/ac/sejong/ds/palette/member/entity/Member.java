@@ -45,6 +45,12 @@ public class Member extends BaseEntity {
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private CoupleCode coupleCode;
 
+    @OneToOne(mappedBy = "male", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Couple coupleAsMale;
+
+    @OneToOne(mappedBy = "female", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Couple coupleAsFemale;
+
     // Authentication Token 생성을 위한 생성자
     public Member(Long id, String email, String password, String nickname, Gender gender, String birthOfDate, String phone) {
         this.id = id;
