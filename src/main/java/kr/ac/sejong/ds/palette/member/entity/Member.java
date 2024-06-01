@@ -3,6 +3,8 @@ package kr.ac.sejong.ds.palette.member.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import kr.ac.sejong.ds.palette.common.entity.BaseEntity;
+import kr.ac.sejong.ds.palette.couple.entity.Couple;
+import kr.ac.sejong.ds.palette.couple.entity.CoupleCode;
 import kr.ac.sejong.ds.palette.member.dto.request.MemberUpdateRequest;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -39,6 +41,9 @@ public class Member extends BaseEntity {
 
     @NotNull
     private boolean preferenceYn;
+
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private CoupleCode coupleCode;
 
     // Authentication Token 생성을 위한 생성자
     public Member(Long id, String email, String password, String nickname, Gender gender, String birthOfDate, String phone) {
