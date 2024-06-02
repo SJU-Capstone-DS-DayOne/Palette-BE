@@ -6,9 +6,13 @@ import kr.ac.sejong.ds.palette.common.entity.BaseEntity;
 import kr.ac.sejong.ds.palette.couple.entity.Couple;
 import kr.ac.sejong.ds.palette.couple.entity.CoupleCode;
 import kr.ac.sejong.ds.palette.member.dto.request.MemberUpdateRequest;
+import kr.ac.sejong.ds.palette.review.entity.Review;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -50,6 +54,9 @@ public class Member extends BaseEntity {
 
     @OneToOne(mappedBy = "female", cascade = CascadeType.ALL, orphanRemoval = true)
     private Couple coupleAsFemale;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Review> reviews = new ArrayList<>();
 
     // Authentication Token 생성을 위한 생성자
     public Member(Long id, String email, String password, String nickname, Gender gender, String birthOfDate, String phone) {
