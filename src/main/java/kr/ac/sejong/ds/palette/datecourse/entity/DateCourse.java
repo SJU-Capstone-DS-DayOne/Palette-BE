@@ -9,6 +9,9 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -22,7 +25,16 @@ public class DateCourse extends BaseEntity {
     @JoinColumn(name = "couple_id")
     private Couple couple;
 
+    @OneToMany(mappedBy = "dateCourse", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DateCourseRestaurant> dateCourseRestaurants = new ArrayList<>();
+
     public DateCourse(Couple couple) {
         this.couple = couple;
+    }
+
+    public void setDateCourseRestaurants(DateCourseRestaurant rst, DateCourseRestaurant cafe, DateCourseRestaurant bar){
+        this.dateCourseRestaurants.add(rst);
+        this.dateCourseRestaurants.add(cafe);
+        this.dateCourseRestaurants.add(bar);
     }
 }
