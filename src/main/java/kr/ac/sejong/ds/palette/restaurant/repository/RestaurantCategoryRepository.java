@@ -9,6 +9,8 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface RestaurantCategoryRepository extends JpaRepository<RestaurantCategory, Long> {
-    @Query("SELECT rc.category FROM RestaurantCategory rc WHERE rc.restaurant.id = :restaurantId")
+    @Query("SELECT rc.category " +
+            "FROM RestaurantCategory rc " +
+            "WHERE rc.restaurant.id = :restaurantId")
     List<Category> findAllCategoryByRestaurantId(@Param("restaurantId") Long restaurantId);
 }
