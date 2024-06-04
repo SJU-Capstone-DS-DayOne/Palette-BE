@@ -14,6 +14,7 @@ import kr.ac.sejong.ds.palette.review.dto.response.ReviewResponse;
 import kr.ac.sejong.ds.palette.review.entity.Review;
 import kr.ac.sejong.ds.palette.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,13 +30,13 @@ public class ReviewService {
     private final MemberRepository memberRepository;
     private final RestaurantRepository restaurantRepository;
 
-    public List<ReviewResponse> getAllReviewByRestaurant(Long restaurantId){
+    public List<ReviewResponse> getAllReviewByRestaurant(Long restaurantId, Pageable pageable){
         // 레스토랑 존재 여부 확인
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(NotFoundRestaurantException::new);
 
         // 해당 레스토랑의 리뷰 + 멤버 정보를 가져옴
-        List<ReviewResponse> reviewResponseList = reviewRepository.findAllWithMemberByRestaurantId(restaurantId)
+        List<ReviewResponse> reviewResponseList = reviewRepository.findAllWithMemberByRestaurantIdOrderByCreatedAtDesc(restaurantId, pageable)
                 .stream().map(ReviewResponse::of).collect(Collectors.toList());
         return reviewResponseList;
     }

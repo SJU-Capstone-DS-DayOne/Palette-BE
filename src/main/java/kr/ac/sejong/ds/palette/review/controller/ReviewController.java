@@ -9,6 +9,7 @@ import kr.ac.sejong.ds.palette.review.dto.request.ReviewUpdateRequest;
 import kr.ac.sejong.ds.palette.review.dto.response.ReviewResponse;
 import kr.ac.sejong.ds.palette.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -24,8 +25,8 @@ public class ReviewController {
 
     @Operation(summary = "레스토랑 리뷰 조회 (회원 정보 포함)")
     @GetMapping("/restaurants/{restaurantId}/reviews")
-    public ResponseEntity<List<ReviewResponse>> getReviewsByRestaurant(@PathVariable(name = "restaurantId") Long restaurantId){
-        List<ReviewResponse> reviewResponseList = reviewService.getAllReviewByRestaurant(restaurantId);
+    public ResponseEntity<List<ReviewResponse>> getReviewsByRestaurant(@PathVariable(name = "restaurantId") Long restaurantId, Pageable pageable){
+        List<ReviewResponse> reviewResponseList = reviewService.getAllReviewByRestaurant(restaurantId, pageable);
         return ResponseEntity.ok().body(reviewResponseList);
     }
 
