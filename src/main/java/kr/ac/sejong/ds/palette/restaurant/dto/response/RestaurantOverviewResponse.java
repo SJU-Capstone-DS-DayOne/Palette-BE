@@ -14,6 +14,7 @@ public record RestaurantOverviewResponse(
         String name,
         Type type,
         String summary,
+        String address,
         Double lat,
         Double lng,
         List<CategoryResponse> categoryResponseList,
@@ -21,7 +22,7 @@ public record RestaurantOverviewResponse(
 ) {
     public static RestaurantOverviewResponse of(Restaurant rst, Set<Category> categoryList, List<Menu> menuList) {
         return new RestaurantOverviewResponse(
-                rst.getId(), rst.getName(), rst.getType(), rst.getSummary(), rst.getLat(), rst.getLng(),
+                rst.getId(), rst.getName(), rst.getType(), rst.getSummary(), rst.getAddress(), rst.getLat(), rst.getLng(),
                 categoryList.stream().map(CategoryResponse::of).toList(),
                 menuList.stream().map(RankedMenuResponse::of).toList()
         );
