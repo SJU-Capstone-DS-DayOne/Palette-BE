@@ -37,6 +37,17 @@ public class DateCourseService {
     private final DateCourseRestaurantRepository dateCourseRestaurantRepository;
     private final ReviewRepository reviewRepository;
 
+    public List<DateCourseResponse> getDateCourseList(Long memberId){
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(NotFoundMemberException::new);
+
+        Couple couple = coupleRepository.findByMaleIdOrFemaleId(memberId, memberId)
+                .orElseThrow(NotCoupleMemberException::new);
+
+        List<DateCourse> dateCourseList = dateCourseRepository.findAllByCoupleIdWithRestaurantAndReviewOrderByCreatedAtDesc(couple.getId());
+        return dateCourseList.stream().map(DateCourseResponse::of).toList();
+    }
+
     @Transactional
     public void createDateCourse(Long memberId, DateCourseRequest dateCourseRequest) {
         Member member = memberRepository.findById(memberId)

@@ -22,6 +22,15 @@ public class DateCourseController {
 
     private final DateCourseService dateCourseService;
 
+    @Operation(summary = "데이트 코스 조회")
+    @GetMapping("/date-courses")
+    public ResponseEntity<List<DateCourseResponse>> getDateCourses(Authentication authentication){
+        Long memberId = ((CustomUserDetails) authentication.getPrincipal()).getMemberId();
+
+        List<DateCourseResponse> dateCourseResponseList = dateCourseService.getDateCourseList(memberId);
+        return ResponseEntity.ok().body(dateCourseResponseList);
+    }
+
     @Operation(summary = "데이트 코스 생성")
     @PostMapping("/date-courses")
     public ResponseEntity<Void> createDateCourse(Authentication authentication, @RequestBody DateCourseRequest dateCourseRequest) {
