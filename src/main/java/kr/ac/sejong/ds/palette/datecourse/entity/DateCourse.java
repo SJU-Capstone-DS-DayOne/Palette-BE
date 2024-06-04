@@ -25,7 +25,7 @@ public class DateCourse extends BaseEntity {
     @JoinColumn(name = "couple_id")
     private Couple couple;
 
-    @OneToMany(mappedBy = "dateCourse", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "dateCourse", cascade = CascadeType.ALL)
     private List<DateCourseRestaurant> dateCourseRestaurants = new ArrayList<>();
 
     public DateCourse(Couple couple) {

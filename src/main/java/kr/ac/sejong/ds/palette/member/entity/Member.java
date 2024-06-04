@@ -46,16 +46,16 @@ public class Member extends BaseEntity {
     @NotNull
     private boolean preferenceYn;
 
-    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "member", fetch = FetchType.LAZY)
     private CoupleCode coupleCode;
 
-    @OneToOne(mappedBy = "male", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "male", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private Couple coupleAsMale;
 
-    @OneToOne(mappedBy = "female", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "female", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private Couple coupleAsFemale;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private List<Review> reviews = new ArrayList<>();
 
     // Authentication Token 생성을 위한 생성자
