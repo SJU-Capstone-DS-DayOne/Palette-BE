@@ -6,14 +6,12 @@ import kr.ac.sejong.ds.palette.review.dto.response.ReviewContentResponse;
 
 public record DateCourseRestaurantResponse(
         Long dateCourseRestaurantId,
-        boolean reviewYn,
         RestaurantForDateCourseResponse restaurant,
         ReviewContentResponse review
 ) {
     public static DateCourseRestaurantResponse of(DateCourseRestaurant dateCourseRestaurant){
         return new DateCourseRestaurantResponse(
                 dateCourseRestaurant.getId(),
-                dateCourseRestaurant.isReviewYn(),
                 RestaurantForDateCourseResponse.of(dateCourseRestaurant.getRestaurant()),
                 dateCourseRestaurant.getReview() != null ? ReviewContentResponse.of(dateCourseRestaurant.getReview()) : null
         );
