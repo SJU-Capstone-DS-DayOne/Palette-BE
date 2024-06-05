@@ -24,7 +24,7 @@ public enum ExceptionType {
     NOT_FOUND_RESTAURANT(HttpStatus.NOT_FOUND, "해당 레스토랑은 존재하지 않습니다."),
 
     // DateCourse
-    NotFoundDateCourseRestaurantException(HttpStatus.NOT_FOUND, "해당 데이트 코스 레스토랑은 존재하지 않습니다.");
+    NOT_FOUND_DATE_COURSE_RESTAURANT(HttpStatus.NOT_FOUND, "해당 데이트 코스 레스토랑은 존재하지 않습니다.");
 
 //    // JWT
 //    USER_INFORMATION_NOT_FOUND(HttpStatus.NOT_FOUND, "유저 정보가 없습니다."),
