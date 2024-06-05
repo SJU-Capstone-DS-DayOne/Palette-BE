@@ -78,7 +78,7 @@ public class SecurityConfig {
         // 경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/login", "/", "/join", "/reissue",
+                        .requestMatchers("/login", "/", "/join/**", "/reissue",
                                 "/swagger-ui/**", "/api-docs/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated());
 
