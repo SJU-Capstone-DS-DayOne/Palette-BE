@@ -18,14 +18,11 @@ public class DateCourseRestaurant extends BaseEntity {
     @Column(name = "date_course_restaurant_id")
     private Long id;
 
-    @NotNull
-    private boolean reviewYn;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "date_course_id")
     private DateCourse dateCourse;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 
@@ -34,14 +31,12 @@ public class DateCourseRestaurant extends BaseEntity {
     private Review review;
 
     public DateCourseRestaurant(DateCourse dateCourse, Restaurant restaurant){
-        this.reviewYn = false;
         this.dateCourse = dateCourse;
         this.restaurant = restaurant;
         this.review = null;
     }
 
     public void reviewCreated(Review review){
-        this.reviewYn = true;
         this.review = review;
     }
 }
