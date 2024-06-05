@@ -56,19 +56,25 @@ public class DateCourseService {
         Couple couple = coupleRepository.findByMaleIdOrFemaleId(memberId, memberId)
                 .orElseThrow(NotCoupleMemberException::new);
 
-        Restaurant rstRestaurant = restaurantRepository.findById(dateCourseRequest.rstRestaurantId())
-                .orElseThrow(NotFoundRestaurantException::new);
-        Restaurant cafeRestaurant = restaurantRepository.findById(dateCourseRequest.cafeRestaurantId())
-                .orElseThrow(NotFoundRestaurantException::new);
-        Restaurant barRestaurant = restaurantRepository.findById(dateCourseRequest.barRestaurantId())
-                .orElseThrow(NotFoundRestaurantException::new);
-
+        // 데이트 코스 생성
         DateCourse dateCourse = new DateCourse(couple);
-        dateCourse.setDateCourseRestaurants(
-                new DateCourseRestaurant(dateCourse, rstRestaurant),
-                new DateCourseRestaurant(dateCourse, cafeRestaurant),
-                new DateCourseRestaurant(dateCourse, barRestaurant)
-        );
+
+        // 데이트 코스 레스토랑 생성
+        if(dateCourseRequest.rstRestaurantId() != null) {
+            Restaurant rstRestaurant = restaurantRepository.findById(dateCourseRequest.rstRestaurantId())
+                    .orElseThrow(NotFoundRestaurantException::new);
+            dateCourse.addDateCourseRestaurant(new DateCourseRestaurant(dateCourse, rstRestaurant));
+        }
+        if(dateCourseRequest.cafeRestaurantId() != null) {
+            Restaurant cafeRestaurant = restaurantRepository.findById(dateCourseRequest.cafeRestaurantId())
+                    .orElseThrow(NotFoundRestaurantException::new);
+            dateCourse.addDateCourseRestaurant(new DateCourseRestaurant(dateCourse, cafeRestaurant));
+        }
+        if(dateCourseRequest.barRestaurantId() != null) {
+            Restaurant barRestaurant = restaurantRepository.findById(dateCourseRequest.barRestaurantId())
+                    .orElseThrow(NotFoundRestaurantException::new);
+            dateCourse.addDateCourseRestaurant(new DateCourseRestaurant(dateCourse, barRestaurant));
+        }
 
         dateCourseRepository.save(dateCourse);
     }
