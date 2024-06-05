@@ -32,9 +32,7 @@ public class DateCourse extends BaseEntity {
         this.couple = couple;
     }
 
-    public void setDateCourseRestaurants(DateCourseRestaurant rst, DateCourseRestaurant cafe, DateCourseRestaurant bar){
-        this.dateCourseRestaurants.add(rst);
-        this.dateCourseRestaurants.add(cafe);
-        this.dateCourseRestaurants.add(bar);
+    public void addDateCourseRestaurant(DateCourseRestaurant dateCourseRestaurant){
+        this.dateCourseRestaurants.add(dateCourseRestaurant);
     }
 }
