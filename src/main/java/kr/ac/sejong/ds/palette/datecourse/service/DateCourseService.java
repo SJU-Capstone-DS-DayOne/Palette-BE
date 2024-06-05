@@ -99,8 +99,8 @@ public class DateCourseService {
         );
         reviewRepository.save(review);
 
-        // 레스토랑의 리뷰 개수 증가
-        dateCourseRestaurant.getRestaurant().increaseReviewCount();
+        // 레스토랑의 리뷰 개수 증가 -> 트리거로 처리함
+        // dateCourseRestaurant.getRestaurant().increaseReviewCount();
 
         // 데이트 코스 페이지에서 리뷰 작성 완료
         dateCourseRestaurant.reviewCreated(review);

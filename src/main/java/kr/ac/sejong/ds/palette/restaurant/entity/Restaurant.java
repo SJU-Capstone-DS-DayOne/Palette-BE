@@ -50,12 +50,13 @@ public class Restaurant extends BaseEntity {
     @OneToMany(mappedBy = "restaurant")
     private List<Menu> menuList = new ArrayList<>();
 
-    public void increaseReviewCount(){
-        this.reviewCount++;
-    }
-
-    public void decreaseReviewCount(){
-        if (this.reviewCount > 0)  // 리뷰가 존재할 때 실행되므로 필요 없지 않을까? (비동기 방식일 경우를 대비?)
-            this.reviewCount--;
-    }
+    // MySQL 트리거 사용으로 대체
+//    public void increaseReviewCount(){
+//        this.reviewCount++;
+//    }
+//
+//    public void decreaseReviewCount(){
+//        if (this.reviewCount > 0)  // 리뷰가 존재할 때 실행되므로 필요 없지 않을까? (비동기 방식일 경우를 대비?)
+//            this.reviewCount--;
+//    }
 }

@@ -55,8 +55,8 @@ public class ReviewService {
         Review review = new Review(reviewCreateRequest.content(), member, restaurant);
         reviewRepository.save(review);
 
-        // 레스토랑의 리뷰 개수 증가
-        restaurant.increaseReviewCount();
+        // 레스토랑의 리뷰 개수 증가 -> 트리거로 처리함
+        // restaurant.increaseReviewCount();
     }
 
     @Transactional
@@ -93,8 +93,8 @@ public class ReviewService {
         // 리뷰 삭제
         reviewRepository.delete(review);
 
-        // 레스토랑의 리뷰 개수 감소
-        review.getRestaurant().decreaseReviewCount();
+        // 레스토랑의 리뷰 개수 감소 -> 트리거로 처리함
+        // review.getRestaurant().decreaseReviewCount();
     }
 
 }
