@@ -90,6 +90,8 @@ public class RestaurantService {
                     return clientResponse.bodyToMono(String.class);
                 })
                 .block();
+
+        member.completedPreferenceSelection();
     }
 
     public RecommendedRestaurantResponse getRecommendedRestaurantListByMemberAndDistrict(Long memberId, String district, Map<String, Boolean> restaurantTypeMap) {
