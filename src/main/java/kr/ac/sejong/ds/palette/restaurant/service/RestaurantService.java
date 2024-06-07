@@ -3,16 +3,22 @@ package kr.ac.sejong.ds.palette.restaurant.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.ac.sejong.ds.palette.common.exception.couple.NotCoupleMemberException;
+import kr.ac.sejong.ds.palette.common.exception.member.NotFoundMemberException;
+import kr.ac.sejong.ds.palette.common.exception.restaurant.FailToSaveRestaurantPreferenceException;
 import kr.ac.sejong.ds.palette.common.exception.restaurant.NotFoundRestaurantException;
 import kr.ac.sejong.ds.palette.couple.entity.Couple;
 import kr.ac.sejong.ds.palette.couple.repository.CoupleRepository;
+import kr.ac.sejong.ds.palette.member.entity.Member;
+import kr.ac.sejong.ds.palette.member.repository.MemberRepository;
 import kr.ac.sejong.ds.palette.menu.entity.Menu;
 import kr.ac.sejong.ds.palette.menu.repository.MenuRepository;
+import kr.ac.sejong.ds.palette.restaurant.dto.request.RestaurantPreferenceRequest;
 import kr.ac.sejong.ds.palette.restaurant.dto.response.RecommendedRestaurantResponse;
 import kr.ac.sejong.ds.palette.restaurant.dto.response.RestaurantOverviewResponse;
 import kr.ac.sejong.ds.palette.restaurant.dto.response.RestaurantPreviewResponse;
 import kr.ac.sejong.ds.palette.restaurant.dto.response.RestaurantResponse;
 import kr.ac.sejong.ds.palette.restaurant.dto.response.model.RecommendedRestaurantModelResponse;
+import kr.ac.sejong.ds.palette.restaurant.dto.response.model.RestaurantPreferenceModelRequest;
 import kr.ac.sejong.ds.palette.restaurant.entity.Category;
 import kr.ac.sejong.ds.palette.restaurant.entity.Restaurant;
 import kr.ac.sejong.ds.palette.restaurant.entity.RestaurantCandidate;
@@ -24,6 +30,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Map;
@@ -37,6 +44,7 @@ public class RestaurantService {
     private final RestaurantRepository restaurantRepository;
     private final RestaurantCategoryRepository restaurantCategoryRepository;
     private final MenuRepository menuRepository;
+    private final MemberRepository memberRepository;
     private final CoupleRepository coupleRepository;
     private final RestaurantCandidateRepository restaurantCandidateRepository;
     private final RestaurantSuggestionRepository restaurantSuggestionRepository;
@@ -44,9 +52,12 @@ public class RestaurantService {
     @Value("${server-info.model.url}")
     private String modelUrl;
 
+    // 신규 멤버 선호 레스토랑 후보 리스트 응답
+
     public List<RestaurantPreviewResponse> getRestaurantListForNewMember(){
-        List<Long> restaurantCandidateIdList = restaurantCandidateRepository.findAllId();
+        List<Long> restaurantCandidateIdList = restaurantCandidateRepository.findAllRestaurantId();
         List<Restaurant> restaurantList = restaurantRepository.findAllByIdInWithMenuAndCategory(restaurantCandidateIdList);
+
 
         return restaurantList.stream().map(
                 restaurant -> RestaurantPreviewResponse.of(
@@ -56,6 +67,7 @@ public class RestaurantService {
                 )
         ).toList();
     }
+
 
     public RecommendedRestaurantResponse getRecommendedRestaurantListByMemberAndDistrict(Long memberId, String district, Map<String, Boolean> restaurantTypeMap) {
 
@@ -137,8 +149,16 @@ public class RestaurantService {
         return RestaurantResponse.of(restaurant, categoryList, menuList);
     }
 
-    // 여기에는 단순히 리뷰 많은 레스토랑?
     public List<RestaurantPreviewResponse> getPopularRestaurantList() {
-        return null;
+        List<Long> restaurantSuggestionIdList = restaurantSuggestionRepository.findAllRestaurantId();
+        List<Restaurant> restaurantList = restaurantRepository.findAllByIdInWithMenuAndCategory(restaurantSuggestionIdList);
+
+        return restaurantList.stream().map(
+                restaurant -> RestaurantPreviewResponse.of(
+                        restaurant,
+                        restaurant.getRestaurantCategoryList().stream().map(RestaurantCategory::getCategory).collect(Collectors.toSet()),
+                        Menu.get1stRankMenu(restaurant.getMenuList())
+                )
+        ).toList();
     }
 }

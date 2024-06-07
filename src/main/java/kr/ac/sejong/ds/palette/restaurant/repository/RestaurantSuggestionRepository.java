@@ -8,6 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface RestaurantSuggestionRepository extends JpaRepository<RestaurantSuggestion, Long> {
-    @Query("SELECT rs.id FROM RestaurantSuggestion rs")
-    List<Long> findAllId();
+    @Query("SELECT rs.restaurantId FROM RestaurantSuggestion rs")
+    List<Long> findAllRestaurantId();
 }

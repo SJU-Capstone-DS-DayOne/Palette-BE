@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface RestaurantCandidateRepository extends JpaRepository<RestaurantCandidate, Long> {
-    @Query("SELECT rc.id FROM RestaurantCandidate rc")
-    List<Long> findAllId();
+    @Query("SELECT rc.restaurantId FROM RestaurantCandidate rc")
+    List<Long> findAllRestaurantId();
 }

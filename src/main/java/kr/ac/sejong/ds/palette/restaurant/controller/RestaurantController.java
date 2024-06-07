@@ -2,7 +2,9 @@ package kr.ac.sejong.ds.palette.restaurant.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import kr.ac.sejong.ds.palette.jwt.dto.CustomUserDetails;
+import kr.ac.sejong.ds.palette.restaurant.dto.request.RestaurantPreferenceRequest;
 import kr.ac.sejong.ds.palette.restaurant.dto.response.RecommendedRestaurantResponse;
 import kr.ac.sejong.ds.palette.restaurant.dto.response.RestaurantPreviewResponse;
 import kr.ac.sejong.ds.palette.restaurant.dto.response.RestaurantResponse;
@@ -10,10 +12,7 @@ import kr.ac.sejong.ds.palette.restaurant.service.RestaurantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -26,12 +25,13 @@ public class RestaurantController {
     private final RestaurantService restaurantService;
 
     // 회원가입 시 선호 레스토랑 선택을 위한 레스토랑 목록 응답
-    @Operation(summary = "신규 유저 선호 레스토랑 선택")
+    @Operation(summary = "신규 유저 선호 레스토랑 후보 목록 조회")
     @GetMapping("/join/restaurants")
     public ResponseEntity<List<RestaurantPreviewResponse>> getRestaurantCandidates(){
         List<RestaurantPreviewResponse> restaurantListForNewMember = restaurantService.getRestaurantListForNewMember();
         return ResponseEntity.ok().body(restaurantListForNewMember);
     }
+
 
     @Operation(summary = "커플 레스토랑 추천")
     @GetMapping("/recommended-restaurants")
@@ -55,10 +55,10 @@ public class RestaurantController {
         return ResponseEntity.ok().body(restaurant);
     }
 
-//    @Operation(summary = "상위 레스토랑 조회")
-//    @GetMapping("/restaurants")
-//    public ResponseEntity<List<RestaurantPreviewResponse>> getPopularRestaurants(){
-//        List<RestaurantPreviewResponse> restaurantPreviewResponseList = restaurantService.getPopularRestaurantList();
-//        return ResponseEntity.ok().body(restaurantPreviewResponseList);
-//    }
+    @Operation(summary = "메인 페이지 레스토랑 제안")
+    @GetMapping("/restaurants")
+    public ResponseEntity<List<RestaurantPreviewResponse>> getPopularRestaurants(){
+        List<RestaurantPreviewResponse> restaurantPreviewResponseList = restaurantService.getPopularRestaurantList();
+        return ResponseEntity.ok().body(restaurantPreviewResponseList);
+    }
 }
