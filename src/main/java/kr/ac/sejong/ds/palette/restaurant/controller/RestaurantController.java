@@ -32,6 +32,13 @@ public class RestaurantController {
         return ResponseEntity.ok().body(restaurantListForNewMember);
     }
 
+    @Operation(summary = "신규 유저 선호 레스토랑 입력 (임베딩 생성)")
+    @PostMapping("/join/restaurants")
+    public ResponseEntity<Void> saveRestaurantPreference(Authentication authentication, @RequestBody @Valid RestaurantPreferenceRequest restaurantPreferenceRequest){
+        Long memberId = ((CustomUserDetails) authentication.getPrincipal()).getMemberId();
+        restaurantService.createNewMemberEmbeddings(memberId, restaurantPreferenceRequest);
+        return ResponseEntity.ok().build();
+    }
 
     @Operation(summary = "커플 레스토랑 추천")
     @GetMapping("/recommended-restaurants")

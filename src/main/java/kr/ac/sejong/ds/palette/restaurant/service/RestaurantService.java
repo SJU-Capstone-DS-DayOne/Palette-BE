@@ -53,7 +53,6 @@ public class RestaurantService {
     private String modelUrl;
 
     // 신규 멤버 선호 레스토랑 후보 리스트 응답
-
     public List<RestaurantPreviewResponse> getRestaurantListForNewMember(){
         List<Long> restaurantCandidateIdList = restaurantCandidateRepository.findAllRestaurantId();
         List<Restaurant> restaurantList = restaurantRepository.findAllByIdInWithMenuAndCategory(restaurantCandidateIdList);
@@ -68,6 +67,30 @@ public class RestaurantService {
         ).toList();
     }
 
+    // 신규 멤버 선호 레스토랑을 통한 임베딩 생성 (feat. 모델 서버)
+    public void createNewMemberEmbeddings(Long memberId, RestaurantPreferenceRequest restaurantPreferenceRequest){
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(NotFoundMemberException::new);
+
+        RestaurantPreferenceModelRequest restaurantPreferenceModelRequest = RestaurantPreferenceModelRequest.of(restaurantPreferenceRequest.restaurantIds());
+
+        // 모델 서버에 '선호 레스토랑' POST 요청
+        WebClient webClient = WebClient.create(modelUrl);
+
+        String response = webClient.post().
+                uri(
+                        uriBuilder -> uriBuilder.path("/coldstart")
+                                .queryParam("new_user", memberId)
+                                .build()
+                ).body(Mono.just(restaurantPreferenceModelRequest), RestaurantPreferenceModelRequest.class)
+                .exchangeToMono(clientResponse -> {
+                    if(!clientResponse.statusCode().is2xxSuccessful()) {
+                        throw new FailToSaveRestaurantPreferenceException();
+                    }
+                    return clientResponse.bodyToMono(String.class);
+                })
+                .block();
+    }
 
     public RecommendedRestaurantResponse getRecommendedRestaurantListByMemberAndDistrict(Long memberId, String district, Map<String, Boolean> restaurantTypeMap) {
 

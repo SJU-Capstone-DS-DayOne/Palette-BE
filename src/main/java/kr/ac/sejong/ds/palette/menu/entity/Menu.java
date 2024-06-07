@@ -36,7 +36,7 @@ public class Menu extends BaseEntity {
 
     public static Menu get1stRankMenu(List<Menu> menuList){
         return menuList.stream()
-                .filter(menu -> menu.getRanking() == 1)
+                .filter(menu -> menu.getRanking() != null && menu.getRanking() == 1)
                 .findFirst()
                 .orElse(null);
     }
