@@ -68,6 +68,7 @@ public class RestaurantService {
     }
 
     // 신규 멤버 선호 레스토랑을 통한 임베딩 생성 (feat. 모델 서버)
+    @Transactional
     public void createNewMemberEmbeddings(Long memberId, RestaurantPreferenceRequest restaurantPreferenceRequest){
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(NotFoundMemberException::new);
