@@ -26,7 +26,7 @@ public class RestaurantController {
 
     // 회원가입 시 선호 레스토랑 선택을 위한 레스토랑 목록 응답
     @Operation(summary = "신규 유저 선호 레스토랑 후보 목록 조회")
-    @GetMapping("/join/restaurants")
+    @GetMapping("/join/restaurant-candidates")
     public ResponseEntity<List<RestaurantPreviewResponse>> getRestaurantCandidates(){
         List<RestaurantPreviewResponse> restaurantListForNewMember = restaurantService.getRestaurantListForNewMember();
         return ResponseEntity.ok().body(restaurantListForNewMember);
