@@ -6,6 +6,6 @@ import kr.ac.sejong.ds.palette.common.exception.ExceptionType;
 public class NotFoundDateCourseRestaurantException extends ApplicationException {
 
     public NotFoundDateCourseRestaurantException() {
-        super(ExceptionType.NOT_FOUND_COUPLE_CODE.getHttpStatus(), ExceptionType.NOT_FOUND_COUPLE_CODE.getDetail());
+        super(ExceptionType.NOT_FOUND_DATE_COURSE_RESTAURANT.getHttpStatus(), ExceptionType.NOT_FOUND_DATE_COURSE_RESTAURANT.getDetail());
     }
 }

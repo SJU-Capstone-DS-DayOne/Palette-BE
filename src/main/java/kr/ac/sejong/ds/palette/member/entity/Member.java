@@ -85,4 +85,8 @@ public class Member extends BaseEntity {
         this.birthOfDate = memberUpdateRequest.birthOfDate();
         this.phone = memberUpdateRequest.phone();
     }
+
+    public void completedPreferenceSelection(){
+        this.preferenceYn = true;
+    }
 }
