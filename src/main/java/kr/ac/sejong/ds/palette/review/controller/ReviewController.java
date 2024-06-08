@@ -30,6 +30,14 @@ public class ReviewController {
         return ResponseEntity.ok().body(reviewResponseList);
     }
 
+    @Operation(summary = "유사 취향 유저의 리뷰 조회")
+    @GetMapping("/restaurants/{restaurantId}/similar-member-reviews")
+    public ResponseEntity<List<ReviewResponse>> getSimilarMemberReviewsByRestaurant(Authentication authentication, @PathVariable(name = "restaurantId") Long restaurantId){
+        Long memberId = ((CustomUserDetails) authentication.getPrincipal()).getMemberId();
+        List<ReviewResponse> reviewResponseList = reviewService.getAllSimilarMemberReviewByRestaurant(memberId, restaurantId);
+        return ResponseEntity.ok().body(reviewResponseList);
+    }
+
     @Operation(summary = "레스토랑 리뷰 생성")
     @PostMapping("/restaurants/{restaurantId}/reviews")
     public ResponseEntity<Void> createReview(Authentication authentication, @PathVariable(name = "restaurantId") Long restaurantId, @RequestBody @Valid ReviewCreateRequest reviewCreateRequest){
