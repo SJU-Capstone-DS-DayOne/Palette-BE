@@ -21,10 +21,8 @@ import kr.ac.sejong.ds.palette.restaurant.dto.response.model.RecommendedRestaura
 import kr.ac.sejong.ds.palette.restaurant.dto.response.model.RestaurantPreferenceModelRequest;
 import kr.ac.sejong.ds.palette.restaurant.entity.Category;
 import kr.ac.sejong.ds.palette.restaurant.entity.Restaurant;
-import kr.ac.sejong.ds.palette.restaurant.entity.RestaurantCandidate;
 import kr.ac.sejong.ds.palette.restaurant.entity.RestaurantCategory;
 import kr.ac.sejong.ds.palette.restaurant.repository.*;
-import kr.ac.sejong.ds.palette.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -125,7 +123,7 @@ public class RestaurantService {
 
         if (restaurantTypeMap.get("rst")){
             List<Long> rstRestaurantIdList = recommendedRestaurantModelResponse.RST();
-            List<Restaurant> rstRestaurantList = restaurantRepository.findAllByIdOrderByIdsWithMenuAndCategory(
+            List<Restaurant> rstRestaurantList = restaurantRepository.findAllByIdsOrderByIdsWithMenuAndCategory(
                     rstRestaurantIdList, rstRestaurantIdList.stream().map(String::valueOf).collect(Collectors.joining(","))
             );
             rstRestaurantOverviewResponseList = rstRestaurantList.stream().map(
@@ -138,7 +136,7 @@ public class RestaurantService {
         }
         if (restaurantTypeMap.get("cafe")) {
             List<Long> cafeRestaurantIdList = recommendedRestaurantModelResponse.CAFE();
-            List<Restaurant> cafeRestaurantList = restaurantRepository.findAllByIdOrderByIdsWithMenuAndCategory(
+            List<Restaurant> cafeRestaurantList = restaurantRepository.findAllByIdsOrderByIdsWithMenuAndCategory(
                     cafeRestaurantIdList, cafeRestaurantIdList.stream().map(String::valueOf).collect(Collectors.joining(","))
             );
             cafeRestaurantOverviewResponseList = cafeRestaurantList.stream().map(
@@ -151,7 +149,7 @@ public class RestaurantService {
         }
         if (restaurantTypeMap.get("bar")) {
             List<Long> barRestaurantIdList = recommendedRestaurantModelResponse.BAR();
-            List<Restaurant> barRestaurantList = restaurantRepository.findAllByIdOrderByIdsWithMenuAndCategory(
+            List<Restaurant> barRestaurantList = restaurantRepository.findAllByIdsOrderByIdsWithMenuAndCategory(
                     barRestaurantIdList, barRestaurantIdList.stream().map(String::valueOf).collect(Collectors.joining(","))
             );
             barRestaurantOverviewResponseList = barRestaurantList.stream().map(
