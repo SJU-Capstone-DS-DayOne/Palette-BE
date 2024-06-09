@@ -52,7 +52,7 @@ public class SecurityConfig {
 
                         CorsConfiguration configuration = new CorsConfiguration();
 
-                        configuration.setAllowedOrigins(Arrays.asList("https://localhost:5173", "https://sju-capstone-ds-dayone.github.io"));
+                        configuration.setAllowedOrigins(Arrays.asList("https://localhost:5173", "https://palette.kr"));
                         configuration.setAllowedMethods(Collections.singletonList("*"));
                         configuration.setAllowCredentials(true);
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
