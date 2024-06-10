@@ -46,7 +46,7 @@ public class Member extends BaseEntity {
     @NotNull
     private boolean preferenceYn;
 
-    @OneToOne(mappedBy = "member", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private CoupleCode coupleCode;
 
     @OneToOne(mappedBy = "male", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
