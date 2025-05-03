@@ -31,6 +31,10 @@ public class Member extends BaseEntity {
     private String password;
 
     @NotNull
+    @Enumerated(value = EnumType.STRING)
+    private Role role;
+
+    @NotNull
     private String nickname;
 
     @NotNull
@@ -58,8 +62,19 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private List<Review> reviews = new ArrayList<>();
 
+    public Member(String email, String password, String nickname, Gender gender, String birthOfDate, String phone, Role role) {
+        this.email = email;
+        this.password = password;
+        this.nickname = nickname;
+        this.gender = gender;
+        this.birthOfDate = birthOfDate;
+        this.phone = phone;
+        this.preferenceYn = false;
+        this.role = role;
+    }
+
     // Authentication Token 생성을 위한 생성자
-    public Member(Long id, String email, String password, String nickname, Gender gender, String birthOfDate, String phone) {
+    public Member(Long id, String email, String password, String nickname, Gender gender, String birthOfDate, String phone, Role role) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -68,16 +83,7 @@ public class Member extends BaseEntity {
         this.birthOfDate = birthOfDate;
         this.phone = phone;
         this.preferenceYn = false;
-    }
-
-    public Member(String email, String password, String nickname, Gender gender, String birthOfDate, String phone) {
-        this.email = email;
-        this.password = password;
-        this.nickname = nickname;
-        this.gender = gender;
-        this.birthOfDate = birthOfDate;
-        this.phone = phone;
-        this.preferenceYn = false;
+        this.role = role;
     }
 
     public void updateMemberInfo(final MemberUpdateRequest memberUpdateRequest){

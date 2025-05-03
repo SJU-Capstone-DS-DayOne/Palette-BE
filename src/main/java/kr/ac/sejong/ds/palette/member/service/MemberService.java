@@ -8,6 +8,7 @@ import kr.ac.sejong.ds.palette.member.dto.response.MemberJoinResponse;
 import kr.ac.sejong.ds.palette.member.dto.response.MemberInfoResponse;
 import kr.ac.sejong.ds.palette.member.entity.Gender;
 import kr.ac.sejong.ds.palette.member.entity.Member;
+import kr.ac.sejong.ds.palette.member.entity.Role;
 import kr.ac.sejong.ds.palette.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -38,7 +39,7 @@ public class MemberService {
             throw new DuplicatedEmailException();
         }
 
-        Member member = new Member(email, password, nickname, gender, birthOfDate, phone);
+        Member member = new Member(email, password, nickname, gender, birthOfDate, phone, Role.ROLE_USER);
         memberRepository.save(member);
 
         return MemberJoinResponse.of(member);
