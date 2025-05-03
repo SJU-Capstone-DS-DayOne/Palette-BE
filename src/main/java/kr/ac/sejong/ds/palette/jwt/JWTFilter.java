@@ -9,6 +9,7 @@ import kr.ac.sejong.ds.palette.jwt.dto.CustomUserDetails;
 import kr.ac.sejong.ds.palette.jwt.util.JWTUtil;
 import kr.ac.sejong.ds.palette.member.entity.Gender;
 import kr.ac.sejong.ds.palette.member.entity.Member;
+import kr.ac.sejong.ds.palette.member.entity.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -66,15 +67,16 @@ public class JWTFilter extends OncePerRequestFilter {
         // 토큰에서 memberId, email 획득
         Long memberId = jwtUtil.getMemberId(accessToken);
         String email = jwtUtil.getEmail(accessToken);
+        String role = jwtUtil.getRole(accessToken);
 
         // Member를 생성하여 값 설정
-        Member member = new Member(memberId, email, "tmp", "tmp", Gender.MALE, "20000101", "01012345678");
+        Member member = new Member(memberId, email, "tmp", "tmp", Gender.MALE, "20000101", "01012345678", Role.valueOf(role));
 
         // UserDetails에 회원 정보 객체 담기
         CustomUserDetails customUserDetails = new CustomUserDetails(member);
 
         // 스프링 시큐리티 인증 토큰 생성
-        Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, null);
+        Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
 
         // 세션에 사용자 등록
         SecurityContextHolder.getContext().setAuthentication(authToken);

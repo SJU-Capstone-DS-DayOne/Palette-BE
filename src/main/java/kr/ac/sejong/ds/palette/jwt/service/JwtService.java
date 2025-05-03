@@ -8,6 +8,7 @@ import kr.ac.sejong.ds.palette.jwt.repository.JwtRepository;
 import kr.ac.sejong.ds.palette.jwt.entity.RefreshToken;
 import kr.ac.sejong.ds.palette.jwt.util.JWTUtil;
 import kr.ac.sejong.ds.palette.member.entity.Member;
+import kr.ac.sejong.ds.palette.member.entity.Role;
 import kr.ac.sejong.ds.palette.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -70,10 +71,11 @@ public class JwtService {
         Member member = memberRepository.findByEmail(jwtUtil.getEmail(refresh)).get();
         Long memberId = member.getId();
         String email = member.getEmail();
+        String role = member.getRole().name();
 
         // make new JWT (access token)
-        String newAccess = jwtUtil.createJwt("access", memberId, email, ACCESS_TOKEN_EXP_MS);
-        String newRefresh = jwtUtil.createJwt("refresh", memberId, email, REFRESH_TOKEN_EXP_MS);
+        String newAccess = jwtUtil.createJwt("access", memberId, email, role, ACCESS_TOKEN_EXP_MS);
+        String newRefresh = jwtUtil.createJwt("refresh", memberId, email, role, REFRESH_TOKEN_EXP_MS);
 
         // Refresh 토큰 저장 DB에 기존의 Refresh 토큰 삭제 후 새 Refresh 토큰 저장
         jwtRepository.deleteByRefreshToken(refresh);

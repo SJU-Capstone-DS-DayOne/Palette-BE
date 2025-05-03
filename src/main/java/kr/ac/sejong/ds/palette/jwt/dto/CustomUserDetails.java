@@ -3,10 +3,11 @@ package kr.ac.sejong.ds.palette.jwt.dto;
 import kr.ac.sejong.ds.palette.member.entity.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Collections;
 
 @RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
@@ -15,7 +16,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return Collections.singletonList(new SimpleGrantedAuthority(member.getRole().name()));
     }
 
     public Long getMemberId(){

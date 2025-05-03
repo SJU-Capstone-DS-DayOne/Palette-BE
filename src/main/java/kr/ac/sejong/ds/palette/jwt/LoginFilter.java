@@ -12,6 +12,7 @@ import kr.ac.sejong.ds.palette.jwt.util.JWTUtil;
 import kr.ac.sejong.ds.palette.jwt.dto.MemberLoginRequest;
 import kr.ac.sejong.ds.palette.member.dto.response.MemberLoginResponse;
 import kr.ac.sejong.ds.palette.member.entity.Member;
+import kr.ac.sejong.ds.palette.member.entity.Role;
 import kr.ac.sejong.ds.palette.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -73,10 +74,11 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         Member member = memberRepository.findByEmail(authentication.getName()).get();
         Long memberId = member.getId();
         String email = member.getEmail();
+        String role = member.getRole().name();
 
         // 토큰 생성
-        String access = jwtUtil.createJwt("access", memberId, email, ACCESS_TOKEN_EXP_MS);  // 1시간
-        String refresh = jwtUtil.createJwt("refresh", memberId, email, REFRESH_TOKEN_EXP_MS);  // 24시간
+        String access = jwtUtil.createJwt("access", memberId, email, role, ACCESS_TOKEN_EXP_MS);  // 1시간
+        String refresh = jwtUtil.createJwt("refresh", memberId, email, role, REFRESH_TOKEN_EXP_MS);  // 24시간
 
         // Refresh 토큰 저장
         jwtService.addRefreshToken(email, refresh, REFRESH_TOKEN_EXP_MS);
