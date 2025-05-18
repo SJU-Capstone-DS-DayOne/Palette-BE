@@ -30,6 +30,14 @@ public class Menu extends BaseEntity {
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 
+    public Menu(String name, String imageUrl, Integer ranking, int price, Restaurant restaurant) {
+        this.name = name;
+        this.imageUrl = imageUrl;
+        this.ranking = ranking;
+        this.price = price;
+        this.restaurant = restaurant;
+    }
+
     public static List<Menu> getRankedMenuList(List<Menu> menuList){
         return menuList.stream().filter(menu -> menu.getRanking() != null).toList();
     }
