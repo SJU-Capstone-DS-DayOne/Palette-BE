@@ -27,4 +27,10 @@ public class AdminRestaurantController {
         adminRestaurantService.updateRestaurant(request);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/main-page-restaurants")
+    public ResponseEntity<Void> updateMainPageRestaurants(@RequestBody MainPageRestaurantUpdateRequest request) {
+        adminRestaurantService.updateMainPageRestaurants(request);
+        return ResponseEntity.noContent().build();
+    }
 }

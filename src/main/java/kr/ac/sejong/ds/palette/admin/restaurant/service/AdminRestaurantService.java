@@ -102,4 +102,18 @@ public class AdminRestaurantService {
         menuRepository.deleteByRestaurantId(restaurant.getId());  // 기존 Menu 삭제
         menuRepository.saveAll(menuList);
     }
+
+    @Transactional
+    public void updateMainPageRestaurants(MainPageRestaurantUpdateRequest request) {
+
+        if (restaurantRepository.countByIdIn(request.restaurantIdList()) != request.restaurantIdList().size())  // 레스토랑 존재 여부 체크
+            throw new NotFoundRestaurantException();
+
+        List<RestaurantSuggestion> restaurantSuggestionList = request.restaurantIdList().stream()
+                .map(RestaurantSuggestion::new)
+                .toList();
+
+        restaurantSuggestionRepository.deleteAll(); // 기존 메인 페이지 레스토랑 초기화
+        restaurantSuggestionRepository.saveAll(restaurantSuggestionList);
+    }
 }
