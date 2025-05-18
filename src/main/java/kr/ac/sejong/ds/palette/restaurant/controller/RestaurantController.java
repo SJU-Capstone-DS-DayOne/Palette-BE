@@ -62,10 +62,10 @@ public class RestaurantController {
         return ResponseEntity.ok().body(restaurant);
     }
 
-    @Operation(summary = "메인 페이지 레스토랑 제안")
-    @GetMapping("/restaurants")
-    public ResponseEntity<List<RestaurantPreviewResponse>> getPopularRestaurants(){
-        List<RestaurantPreviewResponse> restaurantPreviewResponseList = restaurantService.getPopularRestaurantList();
+    @Operation(summary = "메인 페이지 레스토랑 목록 조회")
+    @GetMapping("/main-page-restaurants")
+    public ResponseEntity<List<RestaurantPreviewResponse>> getMainPageRestaurants(){
+        List<RestaurantPreviewResponse> restaurantPreviewResponseList = restaurantService.getMainPageRestaurantList();
         return ResponseEntity.ok().body(restaurantPreviewResponseList);
     }
 }
