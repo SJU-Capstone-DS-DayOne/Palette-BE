@@ -23,6 +23,10 @@ public enum ExceptionType {
     // Restaurant
     NOT_FOUND_RESTAURANT(HttpStatus.NOT_FOUND, "해당 레스토랑은 존재하지 않습니다."),
     FAIL_TO_SAVE_RESTAURANT_PREFERENCE(HttpStatus.INTERNAL_SERVER_ERROR, "선호 레스토랑 입력 요청에 실패하였습니다."),
+    DUPLICATED_RESTAURANT(HttpStatus.BAD_REQUEST, "이미 등록된 레스토랑입니다."),
+
+    // Category
+    NOT_FOUND_CATEGORY(HttpStatus.NOT_FOUND, "해당 카테고리는 존재하지 않습니다."),
 
     // DateCourse
     NOT_FOUND_DATE_COURSE_RESTAURANT(HttpStatus.NOT_FOUND, "해당 데이트 코스 레스토랑은 존재하지 않습니다.");
