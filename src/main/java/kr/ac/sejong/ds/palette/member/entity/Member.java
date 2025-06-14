@@ -10,9 +10,12 @@ import kr.ac.sejong.ds.palette.review.entity.Review;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static kr.ac.sejong.ds.palette.member.entity.PreferenceStatus.*;
 
 @Entity
 @Getter
@@ -47,8 +50,10 @@ public class Member extends BaseEntity {
     @NotNull
     private String phone;
 
+    @Setter
     @NotNull
-    private boolean preferenceYn;
+    @Enumerated(value = EnumType.STRING)
+    private PreferenceStatus preferenceStatus;
 
     @OneToOne(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private CoupleCode coupleCode;
@@ -69,7 +74,7 @@ public class Member extends BaseEntity {
         this.gender = gender;
         this.birthOfDate = birthOfDate;
         this.phone = phone;
-        this.preferenceYn = false;
+        this.preferenceStatus = INCOMPLETE;
         this.role = role;
     }
 
@@ -82,7 +87,7 @@ public class Member extends BaseEntity {
         this.gender = gender;
         this.birthOfDate = birthOfDate;
         this.phone = phone;
-        this.preferenceYn = false;
+        this.preferenceStatus = INCOMPLETE;
         this.role = role;
     }
 
@@ -90,9 +95,5 @@ public class Member extends BaseEntity {
         this.nickname = memberUpdateRequest.nickname();
         this.birthOfDate = memberUpdateRequest.birthOfDate();
         this.phone = memberUpdateRequest.phone();
-    }
-
-    public void completedPreferenceSelection(){
-        this.preferenceYn = true;
     }
 }
