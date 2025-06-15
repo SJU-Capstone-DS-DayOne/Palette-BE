@@ -2,10 +2,14 @@ package kr.ac.sejong.ds.palette.review.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kr.ac.sejong.ds.palette.common.exception.infra.message.FailToPublishMessage;
 import kr.ac.sejong.ds.palette.common.exception.member.NotFoundMemberException;
 import kr.ac.sejong.ds.palette.common.exception.restaurant.NotFoundRestaurantException;
 import kr.ac.sejong.ds.palette.common.exception.review.NotFoundReviewException;
 import kr.ac.sejong.ds.palette.common.exception.review.NotMatchingReviewException;
+import kr.ac.sejong.ds.palette.common.infra.messaging.dto.InteractionType;
+import kr.ac.sejong.ds.palette.common.infra.messaging.dto.MemberInteractionMessage;
+import kr.ac.sejong.ds.palette.common.infra.messaging.service.MessageSender;
 import kr.ac.sejong.ds.palette.member.entity.Member;
 import kr.ac.sejong.ds.palette.member.repository.MemberRepository;
 import kr.ac.sejong.ds.palette.restaurant.entity.Restaurant;
@@ -17,6 +21,7 @@ import kr.ac.sejong.ds.palette.review.dto.response.ReviewResponse;
 import kr.ac.sejong.ds.palette.review.entity.Review;
 import kr.ac.sejong.ds.palette.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,11 +31,13 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ReviewService {
 
+    private final MessageSender messageSender;
     private final ReviewRepository reviewRepository;
     private final MemberRepository memberRepository;
     private final RestaurantRepository restaurantRepository;
@@ -103,8 +110,19 @@ public class ReviewService {
         Review review = new Review(reviewCreateRequest.content(), member, restaurant);
         reviewRepository.save(review);
 
-        // 레스토랑의 리뷰 개수 증가 -> 트리거로 처리함
-        // restaurant.increaseReviewCount();
+        // 레스토랑의 리뷰 개수 증가
+         restaurant.increaseReviewCount();
+
+        // 유저 임베딩 업데이트를 위해 RabbitMQ 메시지 생성 및 발행 (임베딩 갱신 요청)
+        MemberInteractionMessage memberInteractionMessage = MemberInteractionMessage.of(
+                InteractionType.UPDATE, memberId, List.of(restaurantId)
+        );
+
+        try {
+            messageSender.sendMemberInteractionMessage(memberInteractionMessage);
+        } catch (Exception e) {
+            log.warn(new FailToPublishMessage().getMessage());  // 실패 시 로그만 남기고 예외는 던지지 않음
+        }
     }
 
     @Transactional
@@ -141,8 +159,8 @@ public class ReviewService {
         // 리뷰 삭제
         reviewRepository.delete(review);
 
-        // 레스토랑의 리뷰 개수 감소 -> 트리거로 처리함
-        // review.getRestaurant().decreaseReviewCount();
+        // 레스토랑의 리뷰 개수 감소
+         review.getRestaurant().decreaseReviewCount();
     }
 
 }

@@ -3,9 +3,13 @@ package kr.ac.sejong.ds.palette.restaurant.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.ac.sejong.ds.palette.common.exception.couple.NotCoupleMemberException;
+import kr.ac.sejong.ds.palette.common.exception.infra.message.FailToPublishMessage;
+import kr.ac.sejong.ds.palette.common.exception.member.NoPreferenceMemberException;
 import kr.ac.sejong.ds.palette.common.exception.member.NotFoundMemberException;
-import kr.ac.sejong.ds.palette.common.exception.restaurant.FailToSaveRestaurantPreferenceException;
 import kr.ac.sejong.ds.palette.common.exception.restaurant.NotFoundRestaurantException;
+import kr.ac.sejong.ds.palette.common.infra.messaging.dto.InteractionType;
+import kr.ac.sejong.ds.palette.common.infra.messaging.dto.MemberInteractionMessage;
+import kr.ac.sejong.ds.palette.common.infra.messaging.service.MessageSender;
 import kr.ac.sejong.ds.palette.couple.entity.Couple;
 import kr.ac.sejong.ds.palette.couple.repository.CoupleRepository;
 import kr.ac.sejong.ds.palette.member.entity.Member;
@@ -18,7 +22,6 @@ import kr.ac.sejong.ds.palette.restaurant.dto.response.RestaurantOverviewRespons
 import kr.ac.sejong.ds.palette.restaurant.dto.response.RestaurantPreviewResponse;
 import kr.ac.sejong.ds.palette.restaurant.dto.response.RestaurantResponse;
 import kr.ac.sejong.ds.palette.restaurant.dto.response.model.RecommendedRestaurantModelResponse;
-import kr.ac.sejong.ds.palette.restaurant.dto.response.model.RestaurantPreferenceModelRequest;
 import kr.ac.sejong.ds.palette.restaurant.entity.Category;
 import kr.ac.sejong.ds.palette.restaurant.entity.Restaurant;
 import kr.ac.sejong.ds.palette.restaurant.entity.RestaurantCategory;
@@ -28,17 +31,20 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static kr.ac.sejong.ds.palette.member.entity.PreferenceStatus.COMPLETE;
+import static kr.ac.sejong.ds.palette.member.entity.PreferenceStatus.PENDING;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class RestaurantService {
 
+    private final MessageSender messageSender;
     private final RestaurantRepository restaurantRepository;
     private final RestaurantCategoryRepository restaurantCategoryRepository;
     private final MenuRepository menuRepository;
@@ -65,35 +71,34 @@ public class RestaurantService {
         ).toList();
     }
 
-    // 신규 멤버 선호 레스토랑을 통한 임베딩 생성 (feat. 모델 서버)
+    // 신규 멤버 선호 레스토랑을 통한 임베딩 생성 (RabbitMQ 메시지를 발행, 모델 서버에 해당 메시지를 소비하여 임베딩을 생성)
     @Transactional
     public void createNewMemberEmbeddings(Long memberId, RestaurantPreferenceRequest restaurantPreferenceRequest){
+
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(NotFoundMemberException::new);
 
-        RestaurantPreferenceModelRequest restaurantPreferenceModelRequest = RestaurantPreferenceModelRequest.of(restaurantPreferenceRequest.restaurantIds());
+        MemberInteractionMessage memberInteractionMessage = MemberInteractionMessage.of(  // RabbitMQ 메시지 생성
+                InteractionType.CREATE, memberId, restaurantPreferenceRequest.restaurantIds()
+        );
 
-        // 모델 서버에 '선호 레스토랑' POST 요청
-        WebClient webClient = WebClient.create(modelUrl);
+        // RabbitMQ 메시지 발행 (임베딩 생성 요청)
+        try {
+            messageSender.sendMemberInteractionMessage(memberInteractionMessage);
+        } catch (Exception e) {
+            throw new FailToPublishMessage();
+        }
 
-        String response = webClient.post().
-                uri(
-                        uriBuilder -> uriBuilder.path("/coldstart")
-                                .queryParam("new_user", memberId)
-                                .build()
-                ).body(Mono.just(restaurantPreferenceModelRequest), RestaurantPreferenceModelRequest.class)
-                .exchangeToMono(clientResponse -> {
-                    if(!clientResponse.statusCode().is2xxSuccessful()) {
-                        throw new FailToSaveRestaurantPreferenceException();
-                    }
-                    return clientResponse.bodyToMono(String.class);
-                })
-                .block();
-
-        member.completedPreferenceSelection();
+        member.setPreferenceStatus(PENDING);  // 선호 레스토랑 선택 상태를 '대기'로 변경
     }
 
     public RecommendedRestaurantResponse getRecommendedRestaurantListByMemberAndDistrict(Long memberId, String district, Map<String, Boolean> restaurantTypeMap) {
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(NotFoundMemberException::new);
+
+        if (member.getPreferenceStatus() != COMPLETE)  // 선호 레스토랑 선택이 완료되지 않은 경우
+            throw new NoPreferenceMemberException();
 
         Couple couple = coupleRepository.findByMaleIdOrFemaleId(memberId, memberId)
                 .orElseThrow(NotCoupleMemberException::new);
