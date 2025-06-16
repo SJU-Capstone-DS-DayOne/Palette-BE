@@ -3,6 +3,7 @@ package kr.ac.sejong.ds.palette.restaurant.repository;
 import kr.ac.sejong.ds.palette.restaurant.entity.Category;
 import kr.ac.sejong.ds.palette.restaurant.entity.RestaurantCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -13,4 +14,9 @@ public interface RestaurantCategoryRepository extends JpaRepository<RestaurantCa
             "FROM RestaurantCategory rc " +
             "WHERE rc.restaurant.id = :restaurantId")
     List<Category> findAllCategoryByRestaurantId(@Param("restaurantId") Long restaurantId);
+
+    @Modifying
+    @Query("DELETE FROM RestaurantCategory rc " +
+            "WHERE rc.restaurant.id = :restaurantId")
+    void deleteByRestaurantId(@Param("restaurantId") Long restaurantId);
 }

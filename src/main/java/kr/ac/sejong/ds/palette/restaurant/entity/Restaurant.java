@@ -50,6 +50,37 @@ public class Restaurant extends BaseEntity {
     @OneToMany(mappedBy = "restaurant")
     private List<Menu> menuList = new ArrayList<>();
 
+    public Restaurant(Long id, String name, Type type, String summary, String district, String address, Double lat, Double lng, String distFromStation, String openingHours, String phone, int reviewCount) {
+        this.id = id;
+        this.name = name;
+        this.type = type;
+        this.summary = summary;
+        this.district = district;
+        this.address = address;
+        this.lat = lat;
+        this.lng = lng;
+        this.distFromStation = distFromStation;
+        this.openingHours = openingHours;
+        this.phone = phone;
+        this.reviewCount = reviewCount;
+    }
+
+    // 모든 정보 업데이트
+    public void update(String name, Type type, String summary, String district, String address, Double lat, Double lng, String distFromStation, String openingHours, String phone, int reviewCount) {
+        this.name = name;
+        this.type = type;
+        this.summary = summary;
+        this.district = district;
+        this.address = address;
+        this.lat = lat;
+        this.lng = lng;
+        this.distFromStation = distFromStation;
+        this.openingHours = openingHours;
+        this.phone = phone;
+        this.reviewCount = reviewCount;
+    }
+
+
     // MySQL 트리거 사용으로 대체
 //    public void increaseReviewCount(){
 //        this.reviewCount++;

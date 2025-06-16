@@ -21,4 +21,9 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
             "LEFT JOIN FETCH r.menuList m " +
             "WHERE r.id IN :restaurantIds")
     List<Restaurant> findAllByIdInWithMenuAndCategory(@Param("restaurantIds") List<Long> restaurantIds);
+
+    @Query(value = "SELECT COUNT(r) " +
+            "FROM Restaurant r " +
+            "WHERE r.id IN :restaurantIds")
+    long countByIdIn(@Param("restaurantIds") List<Long> restaurantIds);
 }

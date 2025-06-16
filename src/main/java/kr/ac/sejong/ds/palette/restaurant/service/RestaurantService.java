@@ -173,7 +173,7 @@ public class RestaurantService {
         return RestaurantResponse.of(restaurant, categoryList, menuList);
     }
 
-    public List<RestaurantPreviewResponse> getPopularRestaurantList() {
+    public List<RestaurantPreviewResponse> getMainPageRestaurantList() {
         List<Long> restaurantSuggestionIdList = restaurantSuggestionRepository.findAllRestaurantId();
         List<Restaurant> restaurantList = restaurantRepository.findAllByIdInWithMenuAndCategory(restaurantSuggestionIdList);
 

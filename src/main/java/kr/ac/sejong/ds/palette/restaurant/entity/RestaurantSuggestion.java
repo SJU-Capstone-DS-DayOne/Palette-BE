@@ -17,4 +17,8 @@ public class RestaurantSuggestion {
     private Long id;
 
     private Long restaurantId;
+
+    public RestaurantSuggestion(Long restaurantId) {
+        this.restaurantId = restaurantId;
+    }
 }
