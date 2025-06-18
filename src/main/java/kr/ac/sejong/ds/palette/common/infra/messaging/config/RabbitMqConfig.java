@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMqConfig {
 
-    private final RabbitMqProperties rabbitMqProperties;
+//    private final RabbitMqProperties rabbitMqProperties;
 
     // Member Interaction
     @Value("${rabbitmq.exchanges.interaction}")
@@ -81,19 +81,6 @@ public class RabbitMqConfig {
                 .bind(interactionQueue())
                 .to(interactionExchange())
                 .with(interactionRoutingKey);
-    }
-
-    /**
-     * RabbitMQ 연동을 위한 ConnectionFactory 빈을 생성하여 반환
-     **/
-    @Bean
-    public CachingConnectionFactory connectionFactory() {
-        CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
-        connectionFactory.setHost(rabbitMqProperties.getHost());
-        connectionFactory.setPort(rabbitMqProperties.getPort());
-        connectionFactory.setUsername(rabbitMqProperties.getUsername());
-        connectionFactory.setPassword(rabbitMqProperties.getPassword());
-        return connectionFactory;
     }
 
     /**
