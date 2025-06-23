@@ -40,7 +40,7 @@ public class DateCourseController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "데이트 코스 리뷰 생성")
+    @Operation(summary = "데이트 코스 리뷰 생성", description = "추천된 데이트 코스 레스토랑에 대한 리뷰를 생성함 (추천된 레스토랑에 대해서는 한 번만 리뷰를 작성할 수 있기 때문에 별도로 필요함)")
     @PostMapping("/date-course-restaurant/{dateCourseRestaurantId}/reviews")
     public ResponseEntity<Void> createDateCourseRestaurantReview(Authentication authentication, @PathVariable(name = "dateCourseRestaurantId") Long dateCourseRestaurantId, @RequestBody @Valid ReviewCreateRequest reviewCreateRequest) {
         Long memberId = ((CustomUserDetails) authentication.getPrincipal()).getMemberId();

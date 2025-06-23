@@ -49,6 +49,6 @@ public class MemberController {
     public ResponseEntity<Void> deleteMember(Authentication authentication){
         Long memberId = ((CustomUserDetails) authentication.getPrincipal()).getMemberId();
         memberService.deleteMember(memberId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

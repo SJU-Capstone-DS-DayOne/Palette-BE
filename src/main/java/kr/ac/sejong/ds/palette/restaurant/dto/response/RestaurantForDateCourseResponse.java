@@ -1,12 +1,12 @@
 package kr.ac.sejong.ds.palette.restaurant.dto.response;
 
 import kr.ac.sejong.ds.palette.restaurant.entity.Restaurant;
-import kr.ac.sejong.ds.palette.restaurant.entity.Type;
+import kr.ac.sejong.ds.palette.restaurant.entity.RestaurantType;
 
 public record RestaurantForDateCourseResponse(
         Long id,
         String name,
-        Type type,
+        RestaurantType restaurantType,
         String district,
         String address
 ) {
@@ -14,7 +14,7 @@ public record RestaurantForDateCourseResponse(
         return new RestaurantForDateCourseResponse(
                 restaurant.getId(),
                 restaurant.getName(),
-                restaurant.getType(),
+                restaurant.getRestaurantType(),
                 restaurant.getDistrict(),
                 restaurant.getAddress()
         );

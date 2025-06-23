@@ -3,6 +3,7 @@ package kr.ac.sejong.ds.palette.restaurant.entity;
 import jakarta.persistence.*;
 import kr.ac.sejong.ds.palette.common.entity.BaseEntity;
 import kr.ac.sejong.ds.palette.menu.entity.Menu;
+import kr.ac.sejong.ds.palette.review.entity.Review;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,14 +18,13 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Restaurant extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "restaurant_id")
     private Long id;
 
     private String name;
 
     @Enumerated(value = EnumType.STRING)
-    private Type type;
+    private RestaurantType restaurantType;
 
     private String summary;
 
@@ -50,10 +50,13 @@ public class Restaurant extends BaseEntity {
     @OneToMany(mappedBy = "restaurant")
     private List<Menu> menuList = new ArrayList<>();
 
-    public Restaurant(Long id, String name, Type type, String summary, String district, String address, Double lat, Double lng, String distFromStation, String openingHours, String phone, int reviewCount) {
+    @OneToMany(mappedBy = "restaurant")
+    private List<Review> reviewList = new ArrayList<>();
+
+    public Restaurant(Long id, String name, RestaurantType restaurantType, String summary, String district, String address, Double lat, Double lng, String distFromStation, String openingHours, String phone, int reviewCount) {
         this.id = id;
         this.name = name;
-        this.type = type;
+        this.restaurantType = restaurantType;
         this.summary = summary;
         this.district = district;
         this.address = address;
@@ -66,9 +69,9 @@ public class Restaurant extends BaseEntity {
     }
 
     // 모든 정보 업데이트
-    public void update(String name, Type type, String summary, String district, String address, Double lat, Double lng, String distFromStation, String openingHours, String phone, int reviewCount) {
+    public void update(String name, RestaurantType restaurantType, String summary, String district, String address, Double lat, Double lng, String distFromStation, String openingHours, String phone, int reviewCount) {
         this.name = name;
-        this.type = type;
+        this.restaurantType = restaurantType;
         this.summary = summary;
         this.district = district;
         this.address = address;
