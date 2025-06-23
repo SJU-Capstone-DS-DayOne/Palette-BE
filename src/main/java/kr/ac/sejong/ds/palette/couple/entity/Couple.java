@@ -27,9 +27,6 @@ public class Couple extends BaseEntity {
     @JoinColumn(name = "female_id")
     private Member female;
 
-    @OneToMany(mappedBy = "couple", cascade = CascadeType.REMOVE)
-    private List<DateCourse> dateCourse;
-
     public Couple(Member male, Member female) {
         this.male = male;
         this.female = female;

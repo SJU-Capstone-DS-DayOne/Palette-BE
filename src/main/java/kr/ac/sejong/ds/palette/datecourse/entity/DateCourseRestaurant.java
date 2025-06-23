@@ -39,4 +39,8 @@ public class DateCourseRestaurant extends BaseEntity {
     public void reviewCreated(Review review){
         this.review = review;
     }
+
+    public void reviewToNull(){
+        this.review = null;
+    }
 }
