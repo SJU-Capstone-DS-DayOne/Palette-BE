@@ -4,19 +4,22 @@ spring:
   profiles:
     include:
       - db
+      - mongodb
       - jwt
       - ssl
       - admin
       - rabbitmq
   jpa:
+    show-sql: false
     properties:
       hibernate:
-        format_sql: true
-
-logging:
-  level:
-    org.hibernate.SQL: debug
-    org.hibernate.orm.jdbc.bind: trace
+        format_sql: false
+        highlight_sql: true
+  batch:
+    jdbc:
+      initialize-schema: always
+    job:
+      enabled: false
 
 server:
   port: 443
