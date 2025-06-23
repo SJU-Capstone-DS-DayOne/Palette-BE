@@ -1,5 +1,6 @@
 package kr.ac.sejong.ds.palette.common.exception;
 
+import kr.ac.sejong.ds.palette.common.exception.infra.message.FailToPublishMessage;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
@@ -9,6 +10,7 @@ public enum ExceptionType {
     // Member
     DUPLICATED_EMAIL(HttpStatus.BAD_REQUEST, "중복된 이메일입니다."),
     NOT_FOUND_MEMBER(HttpStatus.NOT_FOUND, "요청한 ID에 해당하는 멤버가 존재하지 않습니다."),
+    NO_PREFERENCE_MEMBER(HttpStatus.BAD_REQUEST, "해당 멤버는 선호 레스토랑을 선택하지 않았습니다."),
 
     // Couple
     NOT_FOUND_COUPLE_CODE(HttpStatus.NOT_FOUND, "해당 커플 코드는 존재하지 않습니다."),
@@ -22,14 +24,16 @@ public enum ExceptionType {
 
     // Restaurant
     NOT_FOUND_RESTAURANT(HttpStatus.NOT_FOUND, "해당 레스토랑은 존재하지 않습니다."),
-    FAIL_TO_SAVE_RESTAURANT_PREFERENCE(HttpStatus.INTERNAL_SERVER_ERROR, "선호 레스토랑 입력 요청에 실패하였습니다."),
     DUPLICATED_RESTAURANT(HttpStatus.BAD_REQUEST, "이미 등록된 레스토랑입니다."),
 
     // Category
     NOT_FOUND_CATEGORY(HttpStatus.NOT_FOUND, "해당 카테고리는 존재하지 않습니다."),
 
     // DateCourse
-    NOT_FOUND_DATE_COURSE_RESTAURANT(HttpStatus.NOT_FOUND, "해당 데이트 코스 레스토랑은 존재하지 않습니다.");
+    NOT_FOUND_DATE_COURSE_RESTAURANT(HttpStatus.NOT_FOUND, "해당 데이트 코스 레스토랑은 존재하지 않습니다."),
+
+    // Infra
+    FAIL_TO_PUBLISH_MESSAGE(HttpStatus.INTERNAL_SERVER_ERROR, "메시지 발행에 실패하였습니다.");
 
 //    // JWT
 //    USER_INFORMATION_NOT_FOUND(HttpStatus.NOT_FOUND, "유저 정보가 없습니다."),
