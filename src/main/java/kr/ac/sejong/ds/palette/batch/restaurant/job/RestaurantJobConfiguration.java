@@ -55,7 +55,7 @@ public class RestaurantJobConfiguration {
     public Job restaurantIntegrationJob() {
         return new JobBuilder("restaurantIntegrationJob", jobRepository)
                 .start(cleanDuplicatesStep())
-//                .next(insertRestaurantStep())
+                .next(insertRestaurantStep())
                 .build();
     }
 
@@ -66,6 +66,16 @@ public class RestaurantJobConfiguration {
                 .reader(mongoRstReader(null))  // district는 itemReader 빈이 Step 실행 시점에 생성되며 @Value를 통해 동적으로 주입됨
                 .processor(findDuplicatesProcessor())
                 .writer(rstRemover())
+                .build();
+    }
+
+    @Bean
+    public Step insertRestaurantStep() {  // STEP 2
+        return new StepBuilder("insertRestaurantStep", jobRepository)
+                .<MongoRestaurant, Restaurant>chunk(100, platformTransactionManager)
+                .reader(mongoRstReader(null))  // district는 itemReader 빈이 Step 실행 시점에 생성되며 @Value를 통해 동적으로 주입됨
+                .processor(mongoRstToRstProcessor())
+                .writer(retWriter())
                 .build();
     }
 
@@ -98,6 +108,41 @@ public class RestaurantJobConfiguration {
                 menuRepository.deleteAllByRestaurantId(restaurant.getId());  // 연관된 메뉴 삭제
                 reviewRepository.deleteAllByRestaurantId(restaurant.getId());  // 연관된 리뷰 삭제
                 restaurantRepository.delete(restaurant);  // 중복된 레스토랑 삭제
+            });
+        };
+    }
+
+    @Bean
+    public ItemProcessor<MongoRestaurant, Restaurant> mongoRstToRstProcessor() {  // STEP 2 - processor
+        return item -> {
+            Restaurant restaurant = item.toRestaurant();  // 레스토랑 엔티티로 변환
+
+            List<RestaurantCategory> restaurantCategoryList = item.getMongoRestaurantCategoryList().stream()  // 레스토랑 카테고리 엔티티로 변환
+                    .map(mongoCategory -> mongoCategory.toRestaurantCategory(restaurant, categoryRepository.findById(mongoCategory.getCategoryId())
+                            .orElseThrow(NotFoundCategoryException::new)))
+                    .toList();
+            List<Menu> menuList = item.getMongoMenuList().stream().map(mongoMenu -> mongoMenu.toMenu(restaurant)).toList();  // 메뉴 엔티티로 변환
+            List<Review> reviewList = item.getMongoReviewList().stream()  // 리뷰 엔티티로 변환
+                    .map(mongoReview -> mongoReview.toReview(restaurant,memberRepository.findById(mongoReview.getMemberId())
+                            .orElseThrow(NotFoundMemberException::new)))
+                    .toList();
+
+            restaurantCategoryList.stream().forEach(restaurantCategory -> restaurant.getRestaurantCategoryList().add(restaurantCategory));  // 레스토랑에 레스토랑 카테고리 추가 (추후 Writer에서 영속화)
+            menuList.stream().forEach(menu -> restaurant.getMenuList().add(menu));  // 레스토랑에 메뉴 추가
+            reviewList.stream().forEach(review -> restaurant.getReviewList().add(review));  // 레스토랑에 리뷰 추가
+
+            return restaurant;
+        };
+    }
+
+    @Bean
+    public ItemWriter<Restaurant> retWriter() {  // STEP 3 - writer
+        return chunk -> {  // Restaurant 엔티티 및 연관된 엔티티들을 영속화
+            chunk.getItems().forEach(restaurant -> {
+                restaurantRepository.save(restaurant);
+                restaurantCategoryRepository.saveAll(restaurant.getRestaurantCategoryList());
+                menuRepository.saveAll(restaurant.getMenuList());
+                reviewRepository.saveAll(restaurant.getReviewList());
             });
         };
     }
