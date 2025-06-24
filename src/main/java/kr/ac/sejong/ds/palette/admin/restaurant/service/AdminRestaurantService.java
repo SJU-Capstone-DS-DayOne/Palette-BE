@@ -6,6 +6,7 @@ import kr.ac.sejong.ds.palette.admin.restaurant.dto.request.RestaurantUpdateRequ
 import kr.ac.sejong.ds.palette.common.exception.restaurant.DuplicateRestaurantException;
 import kr.ac.sejong.ds.palette.common.exception.restaurant.NotFoundCategoryException;
 import kr.ac.sejong.ds.palette.common.exception.restaurant.NotFoundRestaurantException;
+import kr.ac.sejong.ds.palette.datecourse.repository.DateCourseRestaurantRepository;
 import kr.ac.sejong.ds.palette.menu.entity.Menu;
 import kr.ac.sejong.ds.palette.menu.repository.MenuRepository;
 import kr.ac.sejong.ds.palette.restaurant.entity.Category;
@@ -16,22 +17,49 @@ import kr.ac.sejong.ds.palette.restaurant.repository.CategoryRepository;
 import kr.ac.sejong.ds.palette.restaurant.repository.RestaurantCategoryRepository;
 import kr.ac.sejong.ds.palette.restaurant.repository.RestaurantRepository;
 import kr.ac.sejong.ds.palette.restaurant.repository.RestaurantSuggestionRepository;
+import kr.ac.sejong.ds.palette.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.JobParameters;
+import org.springframework.batch.core.JobParametersBuilder;
+import org.springframework.batch.core.configuration.JobRegistry;
+import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class AdminRestaurantService {
 
+    private final JobLauncher jobLauncher;
+    private final JobRegistry jobRegistry;
     private final RestaurantRepository restaurantRepository;
     private final RestaurantCategoryRepository restaurantCategoryRepository;
     private final CategoryRepository categoryRepository;
     private final MenuRepository menuRepository;
     private final RestaurantSuggestionRepository restaurantSuggestionRepository;
+    private final ReviewRepository reviewRepository;
+    private final DateCourseRestaurantRepository dateCourseRestaurantRepository;
+
+    public void executeRestaurantIntegrationBatch(String district, Integer version) {
+        JobParameters jobParameters = new JobParametersBuilder()
+                .addString("district", district)
+                .addString("version", version.toString())
+                .toJobParameters();
+        try {
+            JobExecution jobExecution = jobLauncher.run(jobRegistry.getJob("restaurantIntegrationJob"), jobParameters);
+            if (jobExecution.getStatus().isUnsuccessful()) {
+                throw new RuntimeException();
+            }
+        } catch (Exception e) {
+            log.error("레스토랑 통합 배치 작업 실행 중 오류 발생: {}", e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
 
     @Transactional
     public void createRestaurant(RestaurantCreateRequest request) {
@@ -71,7 +99,7 @@ public class AdminRestaurantService {
 
         restaurant.update(
                 request.name(),
-                request.type(),
+                request.restaurantType(),
                 request.summary(),
                 request.district(),
                 request.address(),
@@ -92,15 +120,28 @@ public class AdminRestaurantService {
         List<RestaurantCategory> restaurantCategoryList = categoryList.stream()
                 .map(category -> new RestaurantCategory(restaurant, category))
                 .toList();
-        restaurantCategoryRepository.deleteByRestaurantId(restaurant.getId());  // 기존 RestaurantCategory 삭제
+        restaurantCategoryRepository.deleteAllByRestaurantId(restaurant.getId());  // 기존 RestaurantCategory 삭제
         restaurantCategoryRepository.saveAll(restaurantCategoryList);
 
         // Menu 업데이트
         List<Menu> menuList = request.menuCreateRequestList().stream()
                 .map(menuCreateRequest -> menuCreateRequest.toEntity(restaurant))
                 .toList();
-        menuRepository.deleteByRestaurantId(restaurant.getId());  // 기존 Menu 삭제
+        menuRepository.deleteAllByRestaurantId(restaurant.getId());  // 기존 Menu 삭제
         menuRepository.saveAll(menuList);
+    }
+
+    @Transactional
+    public void deleteRestaurant(Long restaurantId) {
+
+        if (!restaurantRepository.existsById(restaurantId))
+            throw new NotFoundRestaurantException();
+
+        restaurantCategoryRepository.deleteAllByRestaurantId(restaurantId);  // 레스토랑 카테고리 삭제
+        menuRepository.deleteAllByRestaurantId(restaurantId);  // 메뉴 삭제
+        reviewRepository.deleteAllByRestaurantId(restaurantId);  // 리뷰 삭제
+        dateCourseRestaurantRepository.deleteAllByRestaurantId(restaurantId);  // 데이트 코스 레스토랑 삭제
+        restaurantRepository.deleteById(restaurantId);  // 레스토랑 삭제
     }
 
     @Transactional
