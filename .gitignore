@@ -202,13 +202,13 @@ gradle-app.setting
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,intellij,java,gradle
 
-src/main/resources/application-db.yml
-src/main/resources/application-jwt.yml
-src/main/resources/application-ssl.yml
-src/main/resources/application-admin.yml
-src/main/resources/application-rabbitmq.yml
-src/main/resources/application-mongodb.yml
-src/main/resources/keystore.p12
+**/application-db.yml
+**/application-jwt.yml
+**/application-ssl.yml
+**/application-admin.yml
+**/application-rabbitmq.yml
+**/application-mongodb.yml
+**/keystore.p12
 
 # logs from logback
 logs/
