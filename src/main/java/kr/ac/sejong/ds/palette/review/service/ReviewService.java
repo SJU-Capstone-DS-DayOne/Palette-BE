@@ -10,6 +10,7 @@ import kr.ac.sejong.ds.palette.common.exception.review.NotMatchingReviewExceptio
 import kr.ac.sejong.ds.palette.common.infra.messaging.dto.InteractionType;
 import kr.ac.sejong.ds.palette.common.infra.messaging.dto.MemberInteractionMessage;
 import kr.ac.sejong.ds.palette.common.infra.messaging.service.MessageSender;
+import kr.ac.sejong.ds.palette.datecourse.repository.DateCourseRestaurantRepository;
 import kr.ac.sejong.ds.palette.member.entity.Member;
 import kr.ac.sejong.ds.palette.member.repository.MemberRepository;
 import kr.ac.sejong.ds.palette.restaurant.entity.Restaurant;
@@ -41,6 +42,7 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final MemberRepository memberRepository;
     private final RestaurantRepository restaurantRepository;
+    private final DateCourseRestaurantRepository dateCourseRestaurantRepository;
 
     @Value("${server-info.model.url}")
     private String modelUrl;
@@ -155,6 +157,10 @@ public class ReviewService {
         // 본인의 리뷰인지 검증
         if(review.getMember().getId() != memberId)
             throw new NotMatchingReviewException();
+
+
+        dateCourseRestaurantRepository.findByReviewId(reviewId)  // 데이트 코스 레스토랑이 참조하는 리뷰를 null로 설정
+                .ifPresent(dateCourseRestaurant -> dateCourseRestaurant.reviewToNull());
 
         // 리뷰 삭제
         reviewRepository.delete(review);

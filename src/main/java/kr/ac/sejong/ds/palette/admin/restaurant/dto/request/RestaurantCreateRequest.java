@@ -4,13 +4,13 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import kr.ac.sejong.ds.palette.menu.dto.request.MenuCreateRequest;
 import kr.ac.sejong.ds.palette.restaurant.entity.Restaurant;
-import kr.ac.sejong.ds.palette.restaurant.entity.Type;
+import kr.ac.sejong.ds.palette.restaurant.entity.RestaurantType;
 import java.util.List;
 
 public record RestaurantCreateRequest(
         @NotNull Long id,
         @NotNull String name,
-        @NotNull Type type,
+        @NotNull RestaurantType restaurantType,
         String summary,
         @NotNull String district,
         @NotNull String address,
@@ -27,7 +27,7 @@ public record RestaurantCreateRequest(
         return new Restaurant(
                 id,
                 name,
-                type,
+                restaurantType,
                 summary,
                 district,
                 address,

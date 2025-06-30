@@ -3,6 +3,7 @@ package kr.ac.sejong.ds.palette.datecourse.repository;
 import kr.ac.sejong.ds.palette.couple.entity.Couple;
 import kr.ac.sejong.ds.palette.datecourse.entity.DateCourse;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -18,4 +19,8 @@ public interface DateCourseRepository extends JpaRepository<DateCourse, Long> {
             "WHERE dc.couple.id = :coupleId " +
             "ORDER BY dc.createdAt DESC")
     List<DateCourse> findAllByCoupleIdWithRestaurantAndReviewOrderByCreatedAtDesc(@Param(value = "coupleId") Long coupleId);
+
+    @Modifying
+    @Query("DELETE FROM DateCourse dc WHERE dc.couple.id = :coupleId")
+    void deleteAllByCoupleId(@Param("coupleId") Long coupleId);
 }

@@ -18,5 +18,5 @@ public interface RestaurantCategoryRepository extends JpaRepository<RestaurantCa
     @Modifying
     @Query("DELETE FROM RestaurantCategory rc " +
             "WHERE rc.restaurant.id = :restaurantId")
-    void deleteByRestaurantId(@Param("restaurantId") Long restaurantId);
+    void deleteAllByRestaurantId(@Param("restaurantId") Long restaurantId);
 }

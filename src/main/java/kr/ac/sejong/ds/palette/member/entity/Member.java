@@ -55,18 +55,6 @@ public class Member extends BaseEntity {
     @Enumerated(value = EnumType.STRING)
     private PreferenceStatus preferenceStatus;
 
-    @OneToOne(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private CoupleCode coupleCode;
-
-    @OneToOne(mappedBy = "male", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private Couple coupleAsMale;
-
-    @OneToOne(mappedBy = "female", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private Couple coupleAsFemale;
-
-    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
-    private List<Review> reviews = new ArrayList<>();
-
     public Member(String email, String password, String nickname, Gender gender, String birthOfDate, String phone, Role role) {
         this.email = email;
         this.password = password;

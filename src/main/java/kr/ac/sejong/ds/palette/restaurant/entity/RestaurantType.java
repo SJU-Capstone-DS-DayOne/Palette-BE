@@ -1,6 +1,6 @@
 package kr.ac.sejong.ds.palette.restaurant.entity;
 
-public enum Type {
+public enum RestaurantType {
     RST,
     CAFE,
     BAR;
