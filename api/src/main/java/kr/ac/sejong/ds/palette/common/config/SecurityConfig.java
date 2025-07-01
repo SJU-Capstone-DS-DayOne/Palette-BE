@@ -78,8 +78,8 @@ public class SecurityConfig {
         // 경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/login", "/", "/join", "/join/restaurant-candidates", "/reissue", "/restaurants",
-                                "/swagger-ui/**", "/api-docs/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/login", "/", "/join", "/join/restaurant-candidates", "/reissue", "/main-page-restaurants",
+                                "/swagger-ui/**", "/api-docs/**", "/v3/api-docs/**", "/actuator/health").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated());
 

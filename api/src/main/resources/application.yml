@@ -20,12 +20,15 @@ spring:
     job:
       enabled: false
 
-server:
-  port: 443
-
 server-info:
   model:
     url: http://15.164.27.229:8000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
 
 springdoc:
   packages-to-scan: kr.ac.sejong.ds.palette  # Swagger 문서를 생성할 컨트롤러가 포함된 패키지를 지정
