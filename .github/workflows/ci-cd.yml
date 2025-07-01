@@ -1,11 +1,11 @@
 name: CI/CD
 
 # 동작 조건 설정: develop 브랜치에 push or pull request가 발생할 경우 동작
-#on:
-#  push:
-#    branches: [ "develop" ]
-#  pull_request:
-#    branches: [ "develop" ]
+on:
+  push:
+    branches: [ "develop" ]
+  pull_request:
+    branches: [ "develop" ]
 
 permissions:
   contents: read
@@ -21,10 +21,12 @@ jobs:
       # 0. 외부 설정 파일 세팅 (application-db.yml)
       - name: 외부 설정 파일 세팅
         run: |
-          echo "${{ secrets.APPLICATION_DB_YML }}" > ./src/main/resources/application-db.yml
-          echo "${{ secrets.APPLICATION_JWT_YML }}" > ./src/main/resources/application-jwt.yml
-          echo "${{ secrets.APPLICATION_SSL_YML }}" > ./src/main/resources/application-ssl.yml
-          echo "${{ secrets.APPLICATION_ADMIN_YML }}" > ./src/main/resources/application-admin.yml
+          mkdir -p common/src/main/resources
+          echo "${{ secrets.APPLICATION_DB_YML }}" > common/src/main/resources/application-db.yml
+          echo "${{ secrets.APPLICATION_JWT_YML }}" > common/src/main/resources/application-jwt.yml
+          echo "${{ secrets.APPLICATION_ADMIN_YML }}" > common/src/main/resources/application-admin.yml
+          echo "${{ secrets.APPLICATION_MONGODB_YML }}" > common/src/main/resources/application-mongodb.yml
+          echo "${{ secrets.APPLICATION_RABBITMQ_YML }}" > common/src/main/resources/application-rabbitmq.yml
 
       # 1. Java 21 세팅
       - name: Set up JDK 21
@@ -41,37 +43,61 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build
 
-      # 4. Docker 이미지 빌드 & Push
-      - name: Docker Image Build & Push
+      # 4-1. Api 모듈 Docker 이미지 빌드 & Push
+      - name: Api Module Docker Image Build & Push
         run: |
           docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/palette .
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/palette
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/palette-api api/.
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/palette-api
 
-  # 위 build-docker-image 작업에서 Push한 이미지를 EC2에서 Pull & Run시키는 과정
-  run-docker-image-on-ec2:
+      # 4-2. Batch 모듈 Docker 이미지 빌드 & Push
+      - name: Batch Module Docker Image Build & Push
+        run: |
+          docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/palette-batch batch/.
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/palette-batch
+
+  # Api 모듈 - EC2 인스턴스에서 Pull & Run
+  deploy-api:
     # build-docker-image 작업이 완료되어야 실행됨
     needs: build-docker-image
 
-    # self-hosted-runner에서 동작
-    runs-on: self-hosted
+    # api 레이블에서 동작
+    runs-on: [self-hosted, api]
 
     steps:
       # 1. 최신 이미지 Pull
       - name: docker pull
         run: |
           docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
-          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/palette
+          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/palette-api
+      # 2. Deploy 스크립트 실행 (Blue-Green 배포 with Nginx, Docker-Compose)
+      - name: Deploy
+        run: ~/deploy.sh
+        env:
+          DOCKER_REGISTRY: ${{ secrets.DOCKERHUB_USERNAME }}
+          IMAGE_NAME: palette-api
 
+  # Batch 모듈 - EC2 인스턴스에서 Pull & Run
+  deploy-batch:
+    # build-docker-image 작업이 완료되어야 실행됨
+    needs: build-docker-image
+
+    # batch 레이블에서 동작
+    runs-on: [self-hosted, batch]
+
+    steps:
+      # 1. 최신 이미지 Pull
+      - name: docker pull
+        run: |
+          docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
+          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/palette-batch
       # 2. 기존 컨테이너 중지
       - name: docker stop container
         run: docker stop $(docker ps -q) 2>/dev/null || true
-
       # 3. 최신 이미지 컨테이너화하여 실행시
       - name: docker run new container
         run: docker run --rm -d -p 8080:8080 -v /etc/localtime:/etc/localtime:ro -e TZ=Asia/Seoul ${{ secrets.DOCKERHUB_USERNAME }}/palette
 
-      # 4. 기존 이미지 정리
-      - name: delete old docker image
-        run: docker system prune -f
+
       
