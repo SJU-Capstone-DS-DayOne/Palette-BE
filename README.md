@@ -66,27 +66,33 @@ AI 기반으로 연인 맞춤 데이트 코스를 추천하는 웹 플랫폼입�
 ## ✅ 주요 구현 기능
 
 ### 🔧 개발 & 인프라 구축
+
 - 요구사항 분석 → ERD 설계 및 API 명세서 작성
-- Spring Boot 기반 REST API 서버 개발 (도메인 패키지 구조)
-- GitHub Actions + Docker 기반 CI/CD 파이프라인 구성
-- Docker Compose 기반 멀티 모듈 분리 및 NGINX를 활용한 **Blue-Green 무중단 배포** 구현
-- API 서버 -  EC2 Auto Scaling Group에 포함되어 인스턴스 자동 확장/축소
+- **Spring Boot** 기반 REST API 서버 개발 (도메인 패키지 구조)
+- **GitHub Actions**와 **Docker** 기반 CI/CD 파이프라인 구성
+- Docker Compose 기반 멀티 모듈 분리 및 **NGINX**를 활용한 **Blue-Green 무중단 배포** 구현
+- (API 서버: **EC2 Auto Scaling Group**에 포함되어 인스턴스 자동 확장/축소)
+
+### 🗂️ 도메인 기능
+
+- 멤버, 커플 API
+- 레스토랑, 메뉴, 리뷰 API
+- 레스토랑 추천 및 데이트코스 생성 API
+- 백오피스 - 레스토랑 관리, 크롤링 데이터 적재(**배치**) API 구현
 
 ### 🔐 인증 및 보안
-- Spring Security + JWT 인증/인가 구현
+
+- **Spring Security + JWT** 인증/인가 구현
 - Access Token은 LocalStorage, Refresh Token은 쿠키에 저장
 - **Token Rotation** 적용
 - HTTPS 통신을 위한 ELB + ACM 구성
 
 ### 🤝 외부 연동 및 통신
+
 - WebClient를 통한 추천 시스템과 API 통신 (레스토랑 추천, 유사 유저 리뷰 등)
-- RabbitMQ 기반 비동기 통신 (유저 임베딩 생성 및 업데이트)
-- MySQL과 MongoDB, 그리고 Amazon S3(+ CloudFront)와 연동
-
-### 🗂️ 도메인 기능
-- 회원가입 / 로그인
-- 멤버, 커플 연결, 레스토랑 추천, 리뷰, 메뉴, 카테고리, 데이트코스 API 구현
-
+- **RabbitMQ** 기반 비동기 통신 (유저 임베딩 생성 및 업데이트)
+- **MySQL**과 **MongoDB**, 그리고 **Amazon S3(+ CloudFront)**와 연동
+- 원활한 커뮤니케이션과 유기적인 협업을 위해 **Swagger**로 REST API 문서화를 진행함
 <br>
 
 ## 📈 성능 개선 및 기술 적용 사례
