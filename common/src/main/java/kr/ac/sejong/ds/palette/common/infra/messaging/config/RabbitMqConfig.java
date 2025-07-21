@@ -121,6 +121,27 @@ public class RabbitMqConfig {
     }
 
     /**
+     * DLQ (Dead Letter Queue) 설정
+     */
+
+    @Bean
+    public Queue embeddingStatusDLQ() {
+        return QueueBuilder.durable("embeddingStatus.dlq").build();
+    }
+
+    @Bean
+    public DirectExchange dlxExchange() {
+        return new DirectExchange("embeddingStatus.dlx");
+    }
+
+    @Bean
+    public Binding dlqBinding() {
+        return BindingBuilder.bind(embeddingStatusDLQ())
+                .to(dlxExchange())
+                .with("embeddingStatus.dlq");
+    }
+
+    /**
      * RabbitMQ 연동을 위한 ConnectionFactory 빈을 생성하여 반환
      **/
     @Bean

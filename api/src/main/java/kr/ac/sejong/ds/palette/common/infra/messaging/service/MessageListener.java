@@ -11,6 +11,8 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -26,13 +28,20 @@ public class MessageListener {
     public void receiveMemberEmbeddingStatusMessage(MemberEmbeddingStatusMessage message) {
 
         log.info("RabbitMQ 유저 임베딩 생성 여부 메시지 수신 - memberId: {}, isSuccess: {}", message.memberId(), message.isSuccess());
-        Member member = memberRepository.findById(message.memberId())
-                .orElseThrow(NotFoundMemberException::new);
+
+        Optional<Member> optionalMember = memberRepository.findById(message.memberId());
+        if (optionalMember.isEmpty()) {  // 멤버를 찾을 수 없는 경우, 메시지를 버림
+            log.error("회원 ID를 찾을 수 없음 - memberId: {}", message.memberId());
+            return;
+        }
+
+        Member member = optionalMember.get();
+
         if (message.isSuccess()) {
             log.info("임베딩 생성 성공 - memberId: {}", message.memberId());
-            member.setPreferenceStatus(PreferenceStatus.COMPLETE);
+            member.setPreferenceStatus(PreferenceStatus.COMPLETE);  // 임베딩 생성 성공 시 필드값 COMPLETE로 변경
         } else {
-            log.info("임베딩 생성 실패 - memberId: {}", message.memberId());  // ML 서버에서 처리 실패 시, 선호 레스토랑 선택 여부 값을 다시 INCOMPLETE로 설정
+            log.info("임베딩 생성 실패 - memberId: {}", message.memberId());  // 임베딩 생성 실패 시 필드값 INCOMPLETE로 변경
             member.setPreferenceStatus(PreferenceStatus.INCOMPLETE);
         }
     }
