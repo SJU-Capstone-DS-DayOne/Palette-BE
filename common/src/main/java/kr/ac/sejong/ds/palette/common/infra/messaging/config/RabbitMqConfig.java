@@ -1,23 +1,33 @@
-package kr.ac.sejong.ds.palette.infra.messaging.config;
+package kr.ac.sejong.ds.palette.common.infra.messaging.config;
 
+import kr.ac.sejong.ds.palette.common.infra.messaging.converter.PersistentJackson2JsonMessageConverter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.DirectExchange;
-import org.springframework.amqp.core.Queue;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.*;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.retry.backoff.ExponentialBackOffPolicy;
+import org.springframework.retry.policy.SimpleRetryPolicy;
+import org.springframework.retry.support.RetryTemplate;
 
+@Slf4j
 @RequiredArgsConstructor
 @Configuration
 public class RabbitMqConfig {
 
-//    private final RabbitMqProperties rabbitMqProperties;
+    @Value("${spring.rabbitmq.host}")
+    private String host;
+    @Value("${spring.rabbitmq.port}")
+    private int port;
+    @Value("${spring.rabbitmq.username}")
+    private String username;
+    @Value("${spring.rabbitmq.password}")
+    private String password;
 
     // Member Interaction
     @Value("${rabbitmq.exchanges.interaction}")
@@ -44,10 +54,10 @@ public class RabbitMqConfig {
     private String batchRoutingKey;
 
     /**
-     * 지정된 Exchange 이름으로 Direct Exchange Bean 을 생성
+     * 지정된 Exchange 이름으로 Direct Exchange Bean 을 생성 (default: durable)
      */
     @Bean
-    public DirectExchange embeddingExchange() {
+    public DirectExchange embeddingStatusExchange() {
         return new DirectExchange(embeddingStatusExchange);
     }
 
@@ -62,21 +72,24 @@ public class RabbitMqConfig {
     }
 
     /**
-     * 지정된 큐 이름으로 Queue Bean 을 생성
+     * 지정된 큐 이름으로 Queue Bean 을 생성 (durable)
      */
     @Bean
-    public Queue embeddingQueue() {
-        return new Queue(embeddingStatusQueue);
+    public Queue embeddingStatusQueue() {
+        return QueueBuilder.durable(embeddingStatusQueue)
+                .withArgument("x-dead-letter-exchange", "embedding-status.dlx")
+                .withArgument("x-dead-letter-routing-key", "embedding-status.dlq")
+                .build();
     }
 
     @Bean
     public Queue interactionQueue() {
-        return new Queue(interactionQueue);
+        return QueueBuilder.durable(interactionQueue).build();
     }
 
     @Bean
     public Queue batchQueue() {
-        return new Queue(batchQueue);
+        return QueueBuilder.durable(batchQueue).build();
     }
 
     /**
@@ -86,8 +99,8 @@ public class RabbitMqConfig {
     @Bean
     public Binding embeddingBinding() {
         return BindingBuilder
-                .bind(embeddingQueue())
-                .to(embeddingExchange())
+                .bind(embeddingStatusQueue())
+                .to(embeddingStatusExchange())
                 .with(embeddingStatusRoutingKey);
     }
 
@@ -108,21 +121,54 @@ public class RabbitMqConfig {
     }
 
     /**
+     * RabbitMQ 연동을 위한 ConnectionFactory 빈을 생성하여 반환
+     **/
+    @Bean
+    public CachingConnectionFactory connectionFactory() {
+        CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
+        connectionFactory.setHost(host);
+        connectionFactory.setPort(port);
+        connectionFactory.setUsername(username);
+        connectionFactory.setPassword(password);
+        connectionFactory.setPublisherReturns(true);  // publisher returns 활성화
+        connectionFactory.setPublisherConfirmType(CachingConnectionFactory.ConfirmType.CORRELATED);  // publisher confirm 활성화
+        return connectionFactory;
+    }
+
+    /**
      * RabbitTemplate을 생성하여 반환
      * ConnectionFactory 로 연결 후 실제 작업을 위한 Template
      */
     @Bean
     public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
-        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-        rabbitTemplate.setMessageConverter(jackson2JsonMessageConverter());
-        return rabbitTemplate;
+        RetryableRabbitTemplate retryableRabbitTemplate = new RetryableRabbitTemplate(connectionFactory);  // RetryableRabbitTemplate 사용
+        retryableRabbitTemplate.setMessageConverter(jackson2JsonMessageConverter());
+
+        RetryTemplate retryTemplate = getRetryTemplate();  // Retry 설정을 위한 RetryTemplate 생성
+        retryableRabbitTemplate.setRetryTemplate(retryTemplate);  // RetryTemplate 적용
+
+        return retryableRabbitTemplate;
+    }
+
+    private static RetryTemplate getRetryTemplate() {
+
+        RetryTemplate retryTemplate = new RetryTemplate();  // RetryTemplate 생성
+        SimpleRetryPolicy simpleRetryPolicy = new SimpleRetryPolicy(3);  // RetryPolicy - 최대 3회 재시도
+        ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();  // BackOffPolicy - 1초 → 2초 → 4초 간격으로 재시도
+        backOffPolicy.setInitialInterval(1000);
+        backOffPolicy.setMultiplier(2);
+        backOffPolicy.setMaxInterval(4000);
+
+        retryTemplate.setRetryPolicy(simpleRetryPolicy);  // RetryPolicy 적용
+        retryTemplate.setBackOffPolicy(backOffPolicy);  // BackOffPolicy 적용
+        return retryTemplate;
     }
 
     /**
-     * Jackson 라이브러리를 사용하여 메시지를 JSON 형식으로 변환하는 MessageConverter 빈을 생성
+     * Jackson 라이브러리를 사용하여 메시지를 JSON 형식으로 변환하는 MessageConverter 빈을 생성 (persistent message)
      */
     @Bean
     public MessageConverter jackson2JsonMessageConverter() {
-        return new Jackson2JsonMessageConverter();
+        return new PersistentJackson2JsonMessageConverter();
     }
 }
